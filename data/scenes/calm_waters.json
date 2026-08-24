@@ -1,0 +1,17 @@
+{
+  "id": "calm_waters",
+  "speaker": "computer",
+  "text": "星舰状态暂时稳定。导航系统显示前方 12 光年处有一个星门，可能通往人类殖民地。但能源储备不足以同时维持生命系统和开启星门。",
+  "options": [
+    {
+      "text": "关闭部分维生系统，全力开启星门",
+      "effects": {"oxygen": -30, "crew": -15, "energy": 20},
+      "next": "final_jump"
+    },
+    {
+      "text": "维持现状，向殖民地发送长距离信号",
+      "effects": {"energy": -10, "crew": 5},
+      "next": "final_jump"
+    }
+  ]
+}

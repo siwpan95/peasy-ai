@@ -1,0 +1,19 @@
+{
+  "id": "alien_contact",
+  "speaker": "alien",
+  "text": "…我们…是…和平的…你们的星舰…处于危险之中…我们可以提供…修复协助…但需要登上你们的船…",
+  "options": [
+    {
+      "text": "接受外星人帮助",
+      "effects": {"hull": 30, "energy": 20, "oxygen": 15, "crew": 5},
+      "flag": "allied_with_aliens",
+      "give_clue": "alien_technology",
+      "next": "calm_waters"
+    },
+    {
+      "text": "婉拒，保持距离",
+      "effects": {"energy": -5},
+      "next": "deep_space"
+    }
+  ]
+}

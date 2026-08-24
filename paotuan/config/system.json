@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "system_name": "Mirror of the Lost",
+    "version": "2.0",
+    "release_date": "2026-06-06",
+    "license": "CC BY-NC-SA 4.0（概念框架）",
+    "based_on": "GURPS 4e（Steve Jackson Games）",
+    "description": "TRPG 三层中间件架构：GURPS 为物理层、Fate 为叙事层、Savage Worlds 为节奏层。MVVM 分离。"
+  },
+  "architecture": {
+    "layers": [
+      {
+        "name": "物理层（Model）",
+        "source": "GURPS 4e 核心",
+        "responsibility": "确定性状态管理。属性、技能、伤害计算、环境物理。",
+        "constraints": "不可被叙事层修改。仅接受来自有效裁决的 Apply(Delta)。不可输出叙事文本。"
+      },
+      {
+        "name": "叙事层（ViewModel）",
+        "source": "Fate Core / 自定义",
+        "responsibility": "将裁决输出包转化为生动描述（锚点短语）。管理玩家宣告。",
+        "constraints": "不可修改原始数值（HP、伤害）。仅可添加上下文标签。不被 View 绕过。"
+      },
+      {
+        "name": "节奏层（View）",
+        "source": "Savage Worlds / OSR",
+        "responsibility": "终端渲染。先攻抽牌。杂兵管理。场次流程。",
+        "constraints": "不决定生死。仅决定谁在先攻序列。不直接读 Model。"
+      }
+    ],
+    "interfaces": {
+      "resolution_output_packet": {
+        "type": "结构体",
+        "fields": ["roll", "target", "success", "margin", "is_crit_success", "is_fumble", "damage", "location", "type", "dr", "penetrated"]
+      },
+      "viewmodel_result": {
+        "type": "结构体",
+        "fields": ["narrative", "derived_tags", "psychic_trigger", "available_focus_actions", "triggered_features", "queued_events", "choices", "environment_update", "status_changes"]
+      },
+      "context_tag": {
+        "type": "字符串",
+        "format": "[来源]: [标签名] -> 影响检定 +/- 修正值",
+        "example": "环境: 地面湿滑 -> 所有平衡/移动检定 -2"
+      }
+    }
+  },
+  "character_sheet_schema": {
+    "physics_layer": {
+      "attributes": { "ST": 10, "DX": 10, "IQ": 10, "HT": 10 },
+      "secondary": { "HP": 10, "FP": 10, "Will": 10, "Per": 10, "Dodge": 8 },
+      "skills": [{ "name": "步枪射击", "level": 12 }],
+      "advantages": ["绝对方向感"],
+      "disadvantages": ["噩梦症"]
+    },
+    "narrative_layer": {
+      "focus_points": { "current": 3, "max": 3 },
+      "luck_points": { "current": 2, "max": 2 },
+      "features": []
+    },
+    "pacing_layer": { "is_wildcard": false, "is_minion": false }
+  },
+  "rules_engine": {
+    "initiative": {
+      "method": "抽牌制",
+      "description": "每位 PC 和活跃 NPC 各一张牌。杂兵作为一个单位。洗牌翻顶先动。"
+    },
+    "combat_cycle": {
+      "time_unit": "每回合 1 秒",
+      "steps": [
+        "判定持续效果（流血/燃烧/休克恢复）",
+        "选择动作（攻击/全力攻击/专注/移动/瞄准）",
+        "3d6 裁决 → ResolutionPacket",
+        "防御方主动防御（闪避/格挡）",
+        "ViewModel 转换 → 锚点描述",
+        "玩家花 ○ 声明细节 / 触发特征"
+      ]
+    },
+    "minion_rules": {
+      "description": "附庸不值得完整 GURPS 流程",
+      "thresholds": { ">=6": "立即移除", "2-5": "丧失行动力/溃逃", "<2": "轻微干扰" },
+      "group_handling": "附庸群作为单个单位行动，一次齐射 = 一个环境检定"
+    },
+    "shock_system": {
+      "threshold": "HP/3",
+      "check": "HT 检定，失败则震慑 1 回合（-4 惩罚）"
+    },
+    "active_defense": {
+      "dodge_formula": "floor((DX+2)/2) + 修正",
+      "parry_formula": "武器技能/2 + 3"
+    },
+    "hit_locations": {
+      "3-5": "头", "6-7": "右臂/左臂", "8-13": "躯干", "14-16": "右腿/左腿", "17-18": "头"
+    },
+    "damage_types": {
+      "切割": "x1.5 穿透伤害",
+      "穿刺": "x2 穿透伤害（仅当 raw > DR）",
+      "钝击": "x1.0",
+      "燃烧": "x1.0 + 持续伤害"
+    },
+    "psychic_marks": {
+      "contact_level": "感知 vs 诡异度(10)。失败：1 印记",
+      "confrontation_level": "意志 vs 实体意志(14)。失败：1-2 印记 + HT 损伤",
+      "breakdown_level": "自动 2-3 印记 + 执念。3-5 印记触发永久执念"
+    },
+    "dual_currency": {
+      "focus_points": "改情境（添加标签/触发特征）—— 专注点 = 改世界",
+      "luck_points": "改骰子（重掷一次）—— 幸运点 = 改概率"
+    }
+  },
+  "content_libraries": {
+    "anchor_phrases": {
+      "blunt_head": {
+        "1-3": "棍身擦过太阳穴；他甩了甩头，注意力短暂涣散了半秒。",
+        "4-7": "一声闷响——铁箍木棒砸在颅骨侧面；他踉跄一步但站稳了，暗色瘀伤迅速泛起。",
+        "8+": "头部猛地一歪——他僵硬地倒下，手指还在微微抽搐。"
+      },
+      "blunt_torso": {
+        "1-3": "撞击闷响，他退了一步，胸甲上留下碗口大的凹痕。",
+        "4-7": "一记重击砸在肋侧——他捂住肋骨，呼吸声像破了的风箱。",
+        "8+": "胸骨碎裂的脆响——他双臂无力垂落，整个人塌了下去。"
+      },
+      "blunt_limb": {
+        "1-3": "棍端扫过臂侧——一阵麻意从肩头蔓延到指尖。",
+        "4-7": "沉闷的击打声中夹杂着骨裂的惨叫——那条手臂再也抬不起来了。",
+        "8+": "一击粉碎了关节——手臂以不可能的角度垂着，骨头碎片刺破皮肤。"
+      },
+      "impaling_head": {
+        "1-3": "刃尖擦过颧骨，留下一道血痕和后退半步的惊惶。",
+        "4-7": "刃锋没入眼眶——恐怖的吸力把他整个人拽向剑尖方向，然后松开了。",
+        "8+": "贯穿颅骨——剑尖从后脑穿出，他站立了一秒，然后像被抽掉骨头一样滑落。"
+      },
+      "impaling_torso": {
+        "1-3": "剑尖刮过护甲肋缘，只留一道白痕和他急促的呼气。",
+        "4-7": "剑尖楔入肋骨之间——他闷哼一声，呼吸变得浅促。手指松开武器，又本能地攥紧。",
+        "8+": "贯穿伤——滚热的鲜血从紧捂的指缝间涌出，他单膝跪地，眼神开始失焦。"
+      },
+      "impaling_limb": {
+        "1-3": "尖刃刺穿衣袖和前臂浅层——伤口窄但深，血顺着手肘滴落。",
+        "4-7": "矛尖穿透肱二头肌，从另一侧钻出——手臂失控，手指再也扣不住任何东西。",
+        "8+": "整条手臂被钉穿——神经信号断了，那股从肩到手的联系像被剪断的琴弦。"
+      },
+      "cutting_head": {
+        "1-3": "刀刃擦过头皮——血从发际线淌下，遮住了一只眼睛。",
+        "4-7": "一记横斩划开头皮——皮肉翻卷，他捂脸的指缝间血如泉涌。",
+        "8+": "颅骨被劈开——斧刃卡在骨缝里拔不出来，身体却不甘地软倒了。"
+      },
+      "cutting_torso": {
+        "1-3": "刀刃划破衣料和小腹皮肤——血珠渗出，像一条红色虚线。",
+        "4-7": "一记斜劈从锁骨划到腰际——不是深，是长，一整条皮肉外翻，伤口像在呼吸。",
+        "8+": "开膛——内脏的温热从豁口涌出，他用最后一丝力气想把它们塞回去。"
+      },
+      "cutting_limb": {
+        "1-3": "刃口划开袖口布料，皮肉只裂一层——血线细得像笔触。",
+        "4-7": "砍入前臂肌理，他整条胳膊一颤，指节松了——武器还夹着但用不上力。",
+        "8+": "一记劈到肘以上——手臂的联动断了，血随心跳节拍从断面泼出。"
+      }
+    },
+    "context_tags_starter": [
+      { "id": "rain_slick", "name": "暴雨湿滑", "mod": "闪避 -1，攀爬 -2" },
+      { "id": "low_light", "name": "低能见度", "mod": "视觉感知 -3，近距以外远程攻击 -2" },
+      { "id": "acoustic_exposure", "name": "声学暴露", "mod": "听觉 vs 潜行 +2" },
+      { "id": "cover_rich", "name": "掩体丰富", "mod": "半掩体/全掩体：受到攻击 -2/-4" },
+      { "id": "corrosive_fumes", "name": "腐蚀烟气", "mod": "HT 每 30 秒检定，失败 -1 FP" },
+      { "id": "darkness", "name": "完全黑暗", "mod": "无光源时视觉感知 -9" }
+    ]
+  },
+  "scenario_seed": {
+    "title": "镜屋巷",
+    "act_1": "暴雨中躲进旧仓库。听到不该有水管的那面墙后传来滴水声。",
+    "act_2": "发现一堵抹灰墙后藏着一具手握铜镜的失踪者尸体。",
+    "act_3": "地下礼拜堂与那面反射相反动作的水银镜。"
+  },
+  "gm_cheatsheet": {
+    "quick_checklist": [
+      "抽先攻牌",
+      "结算持续效果（流血/震慑）",
+      "裁决 → 锚点短语（查表）",
+      "验证专注点消耗",
+      "杂兵作为群体移动",
+      "清除一次性标签"
+    ],
+    "3d6_interpretation": {
+      "3-4": "大成功",
+      "5~目标值": "成功",
+      "目标值+1~16": "失败",
+      "17-18": "大失败"
+    }
+  }
+}

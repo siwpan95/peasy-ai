@@ -1,0 +1,43 @@
+{
+  "enemies": [
+    {
+      "name": "巨鼠群",
+      "enemy_type": "mook",
+      "hp": 10, "hp_max": 10,
+      "attack_skill": 12, "damage": "1d-4 cut",
+      "dodge": 9, "dr": 0,
+      "description": "被铜镜气息吸引的变异鼠群，在暗处窸窣作响。",
+      "flavor_text": "它们的眼睛在黑暗中泛着不自然的银光——像微型镜子。",
+      "minion_threshold": { ">=6": "立即移除", "2-5": "丧失行动力/溃逃", "<2": "轻微干扰" },
+      "special_abilities": [
+        { "name": "群扑", "effect": "Deceptive Attack -2 防御", "trigger": "attack" }
+      ]
+    },
+    {
+      "name": "镜中倒影",
+      "enemy_type": "wildcard",
+      "hp": 12, "hp_max": 12, "fp": 12,
+      "st": 11, "dx": 12, "iq": 10, "ht": 12,
+      "attack_skill": 14, "damage": "2d6 cut",
+      "dodge": 10, "dr": 2,
+      "description": "水银镜中走出的镜像体——与你的外貌完全相同，但一切动作都是反的。",
+      "flavor_text": "它的微笑是上下颠倒的。",
+      "special_abilities": [
+        { "name": "镜像反转", "effect": "攻击被反射。破解需 IQ/战术检定 → 逆转攻击。",
+          "trigger": "always" },
+        { "name": "反射伤害", "effect": "直接攻击镜子 → 自身受同等伤害。",
+          "trigger": "direct_attack" }
+      ]
+    },
+    {
+      "name": "镜中守卫",
+      "enemy_type": "mook",
+      "hp": 10, "hp_max": 10,
+      "attack_skill": 11, "damage": "1d6 cut",
+      "dodge": 8, "dr": 1,
+      "description": "从铜镜中伸出的苍白手臂——它似乎没有完整的形态。",
+      "flavor_text": "它不是实体，是铜镜收集的昔日碎片。",
+      "minion_threshold": { ">=6": "立即消散", "2-5": "缩回镜中", "<2": "暂时畏缩" }
+    }
+  ]
+}

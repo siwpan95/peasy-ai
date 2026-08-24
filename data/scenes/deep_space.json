@@ -1,0 +1,17 @@
+{
+  "id": "deep_space",
+  "speaker": "doctor",
+  "text": "我们进入了一片未知的深空区域。船员的心理压力需要关注。医疗舱报告：焦虑水平上升，但暂无身体症状。",
+  "options": [
+    {
+      "text": "举行全舰会议，鼓舞士气",
+      "effects": {"crew": 15, "energy": -5, "oxygen": -5},
+      "next": "calm_waters"
+    },
+    {
+      "text": "执行强制性休息安排",
+      "effects": {"crew": 5, "oxygen": 10},
+      "next": "calm_waters"
+    }
+  ]
+}

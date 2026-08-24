@@ -1,0 +1,1436 @@
+# import re import random  class SimpleAI:     def __init__(self):         # 基础问答库：模式 -＞ 可能的回复列表         self.rules = {           
+用户:
+import re
+import random
+class SimpleAI:
+```
+def __init__(self):
+
+    # 基础问答库：模式 -> 可能的回复列表
+
+    self.rules = {
+
+        r'你好|嗨|hello|hi': [
+
+            '你好呀！今天想聊什么？',
+
+            '嗨！很高兴见到你。',
+
+            'Hello! 有什么我可以帮你的吗？'
+
+        ],
+
+        r'你叫什么|你是谁|你的名字': [
+
+            '我叫小简，一个用 Python 写的简易 AI。',
+
+            '我是小简，你的聊天伙伴。'
+
+        ],
+
+        r'我(.*)心情(.*)': [
+
+            '听起来你现在心情{0}。愿意多说说吗？',
+
+            '我能感受到你的情绪，{0}的感觉确实很特别。'
+
+        ],
+
+        r'我(.*)': [
+
+            '你为什么{0}呢？',
+
+            '能告诉我更多关于你{0}的事情吗？',
+
+            '你说你{0}，这很有趣。'
+
+        ],
+
+        r'谢谢|多谢|感谢': [
+
+            '不客气！能帮到你就好。',
+
+            '不用谢，这是我应该做的。',
+
+            '随时为你效劳～'
+
+        ],
+
+        r'再见|拜拜|bye': [
+
+            '再见！期待下次聊天。',
+
+            '拜拜，祝你有美好的一天！',
+
+            'Bye～ 我会想你的。'
+
+        ],
+
+        r'.*天气.*': [
+
+            '我暂时还不会看天气，但你可以告诉我你现在在哪里，我可以试着记住。',
+
+            '天气总是变化无常，不如聊聊你的心情？'
+
+        ],
+
+        r'.*': [
+
+            '这个话题很有意思，能再详细说说吗？',
+
+            '我不太确定该怎么回应，但你可以教我新的回答方式。',
+
+            '嗯，我在听。'
+
+        ]
+
+    }
+
+    # 用户动态教的新回答：精确问题 -> 回复列表
+
+    self.memory = {}
+
+
+
+def reflect(self, text):
+
+    """简单的代词反射：把你我互换，让对话更自然"""
+
+    reflections = {
+
+        '我': '你',
+
+        '你': '我',
+
+        '我的': '你的',
+
+        '你的': '我的',
+
+        '我是': '你是',
+
+        '你是': '我是',
+
+    }
+
+    for k, v in reflections.items():
+
+        text = text.replace(k, v)
+
+    return text
+
+
+
+def learn(self, question, answer):
+
+    """学习新的问答对"""
+
+    question = question.strip()
+
+    if question not in self.memory:
+
+        self.memory[question] = []
+
+    self.memory[question].append(answer)
+
+    return f'好的，我记住了。以后有人问“{question}”时，我会回答：“{answer}”。'
+
+
+
+def respond(self, message):
+
+    message = message.strip()
+
+    # 检查精确记忆（用户教过的问题）
+
+    if message in self.memory:
+
+        return random.choice(self.memory[message])
+
+
+
+    # 按规则匹配，并处理可能的反射
+
+    for pattern, responses in self.rules.items():
+
+        match = re.match(pattern, message)
+
+        if match:
+
+            reply = random.choice(responses)
+
+            # 如果有捕获组，把反射后的内容填入 {0}
+
+            if match.groups():
+
+                reflected = self.reflect(match.group(1))
+
+                reply = reply.format(reflected)
+
+            return reply
+
+
+
+    # 理论上不会到这里，因为最后有 .* 兜底
+
+    return "嗯……我不太明白，你可以教教我。"
+```
+def main():
+```
+ai = SimpleAI()
+
+print("小简：你好！我是用 Python 写的简易 AI。")
+
+print("小简：你可以和我聊天，也可以教我新回答。")
+
+print("小简：教我格式：问：你的问题 答：我的回答")
+
+print("小简：输入“再见”或“bye”退出。\n")
+
+
+
+while True:
+
+    user_input = input("你：")
+
+    if not user_input:
+
+        continue
+
+
+
+    # 退出指令
+
+    if re.match(r'再见|拜拜|bye', user_input):
+
+        print("小简：", ai.respond(user_input))
+
+        break
+
+
+
+    # 教学指令：问：xxx 答：yyy
+
+    teach_match = re.match(r'问[：:]\s*(.+?)\s*答[：:]\s*(.+)', user_input)
+
+    if teach_match:
+
+        q, a = teach_match.groups()
+
+        result = ai.learn(q, a)
+
+        print("小简：", result)
+
+        continue
+
+
+
+    # 正常对话
+
+    print("小简：", ai.respond(user_input))
+```
+if name == 'main':
+```
+main()
+```
+元宝:
+这段代码的思路非常棒！这是一个经典的 ELIZA 风格模式匹配 AI，结构清晰，逻辑完整，非常适合用来理解 NLP 的基础概念。
+我注意到你的代码里有一个潜在的 Bug，以及几个可以立刻优化的亮点。让我帮你把这个 AI 变得更聪明一点：
+### 🐛 发现一个小 Bug
+在 r'我(.*)心情(.*)' 这一条规则中，你使用了 {0} 来填充，但是正则表达式中包含了两个捕获组 (.*)。
+这意味着 match.group(1) 取到的是“心情”前面的内容，而不是后面的。
+修正建议：
+```python
+r'我(.*?)心情(.*)': [  # 改成非贪婪匹配，防止吃太多字
+    '听起来你现在心情{1}。愿意多说说吗？',  # 这里应该是 {1}
+    '我能感受到你的情绪，{1}的感觉确实很特别。'
+]
+```
+### ✨ 优化与增强建议
+#### 1. 修复反射逻辑的局限性
+目前的 reflect 函数使用 replace，这会导致“我们”变成“我们”（因为‘我’被替换了）。建议使用单词边界或字典映射优化，但对于简单场景，我们可以加个顺序保护：
+```python
+def reflect(self, text):
+    """优化版：防止 '我们' -> '我们'"""
+    reflections = [
+        ("我是", "你是"),
+        ("你是", "我是"),
+        ("我的", "你的"),
+        ("你的", "我的"),
+        ("我", "你"),
+        ("你", "我"),
+    ]
+    for old, new in reflections:
+        text = text.replace(old, new)
+    return text
+```
+#### 2. 增加“记忆”功能（记住用户的名字）
+现在的 Memory 只存了问答对，我们可以让它记住用户的个人信息。
+```python
+class SimpleAI:
+    def __init__(self):
+        self.rules = {
+            # ... 原有规则 ...
+            r'我叫(.*)|我是(.*)': [
+                '你好{0}！很高兴认识你。',
+                '名字不错哦，{0}~'
+            ],
+        }
+        self.user_name = ""  # 新增：存储用户名
+
+    def respond(self, message):
+        # ... 原有逻辑 ...
+        for pattern, responses in self.rules.items():
+            match = re.match(pattern, message)
+            if match:
+                reply = random.choice(responses)
+                # 提取名字并存储
+                name = match.group(1) or match.group(2)
+                if name and '我叫' in message or '我是' in message:
+                    self.user_name = name.strip()
+                
+                if match.groups():
+                    reflected = self.reflect(match.group(1) or "")
+                    reply = reply.format(reflected, self.user_name)
+                return reply
+```
+#### 3. 让兜底回复更自然
+现在的 .* 兜底回复有点机械。可以加入一些随机的填充词，模拟思考停顿：
+```python
+r'.*': [
+    '关于这个，你怎么看？',
+    '嗯... 然后呢？',
+    '这让我想起了之前聊过的一些事。',
+    '能换个角度再说说吗？'
+]
+```
+#### 4. 持久化存储（进阶）
+现在的 memory 只在程序运行时存在，关掉就没了。可以使用 json 文件保存：
+```python
+import json
+
+def save_memory(self):
+    with open('memory.json', 'w', encoding='utf-8') as f:
+        json.dump(self.memory, f, ensure_ascii=False)
+
+def load_memory(self):
+    try:
+        with open('memory.json', 'r', encoding='utf-8') as f:
+            self.memory = json.load(f)
+    except FileNotFoundError:
+        self.memory = {}
+```
+### 🚀 运行效果示例
+```
+小简：你好！我是用 Python 写的简易 AI。
+你：我叫小明
+小简：你好小明！很高兴认识你。
+你：我心情很好
+小简：听起来你现在心情很好。愿意多说说吗？
+你：问：你喜欢什么 答：我喜欢和你聊天
+小简：好的，我记住了...
+你：你喜欢什么
+小简：我喜欢和你聊天
+```
+这个 AI 的核心魅力在于模式匹配，如果你想进一步挑战，可以尝试引入 jieba 分词 或者 TF-IDF 来做模糊匹配，那就更像现代聊天机器人了！需要我帮你写这部分代码吗？😊
+
+用户:
+写这部分代码
+元宝:
+好，我们把从「正则规则」升级到「TF‑IDF 语义相似度」这一步，用最小改动、可运行的方式写出来。
+你原来的 SimpleAI 结构会完整保留，只是多一种“更聪明的匹配方式”。
+---
+## 一、准备工作（只需一次）
+```bash
+pip install scikit-learn jieba
+```
+---
+## 二、核心思路（很重要）
+1. 把所有“已知问题”当成语料
+    - 规则里的模式
+    - 用户教过的 memory
+2. 用 TF‑IDF 向量化
+3. 计算用户输入 vs 已知问题的余弦相似度
+4. 超过阈值 → 用最相似问题的答案
+5. 低于阈值 → 回退到原来的正则
+👉 这样你既有“语义理解”，又不会丢失原有逻辑。
+---
+## 三、新增代码（可直接粘贴）
+### 1️⃣ 新增 TF‑IDF 模块
+```python
+import jieba
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+
+def tokenize(text):
+    """中文分词"""
+    return " ".join(jieba.lcut(text))
+```
+---
+### 2️⃣ 改造 SimpleAI
+```python
+class SimpleAI:
+    def __init__(self):
+        self.rules = {
+            r'你好|嗨|hello|hi': ['你好呀！今天想聊什么？'],
+            r'你叫什么|你是谁': ['我叫小简，一个用 Python 写的 AI。'],
+            r'谢谢|感谢': ['不客气！'],
+            r'再见|拜拜|bye': ['再见！'],
+            r'.*': ['这个挺有意思的，能再说详细点吗？']
+        }
+
+        self.memory = {}  # 精确问答
+        self.corpus = []  # 所有已知问题
+        self.answers = [] # 对应答案
+
+        self.vectorizer = None
+        self.tfidf_matrix = None
+
+        self._build_corpus()
+
+    def _build_corpus(self):
+        """构建 TF‑IDF 语料"""
+        self.corpus.clear()
+        self.answers.clear()
+
+        # 规则
+        for pattern, responses in self.rules.items():
+            self.corpus.append(pattern)
+            self.answers.append(random.choice(responses))
+
+        # 记忆
+        for q, ans_list in self.memory.items():
+            self.corpus.append(q)
+            self.answers.append(random.choice(ans_list))
+
+        texts = [tokenize(t) for t in self.corpus]
+        self.vectorizer = TfidfVectorizer()
+        self.tfidf_matrix = self.vectorizer.fit_transform(texts)
+```
+---
+### 3️⃣ 新增：语义匹配方法
+```python
+    def tfidf_reply(self, message, threshold=0.3):
+        """TF‑IDF 相似度匹配"""
+        if self.tfidf_matrix is None:
+            return None
+
+        vec = self.vectorizer.transform([tokenize(message)])
+        sims = cosine_similarity(vec, self.tfidf_matrix)[0]
+
+        best_idx = np.argmax(sims)
+        score = sims[best_idx]
+
+        if score >= threshold:
+            return self.answers[best_idx]
+        return None
+```
+---
+### 4️⃣ 修改 respond（关键）
+```python
+    def respond(self, message):
+        message = message.strip()
+
+        # 1️⃣ 精确记忆
+        if message in self.memory:
+            return random.choice(self.memory[message])
+
+        # 2️⃣ TF‑IDF 语义匹配（新增）
+        sem_reply = self.tfidf_reply(message)
+        if sem_reply:
+            return sem_reply
+
+        # 3️⃣ 正则兜底
+        for pattern, responses in self.rules.items():
+            if re.match(pattern, message):
+                return random.choice(responses)
+
+        return "嗯…我还不太懂，你可以教教我。"
+```
+---
+### 5️⃣ 学习后重建语料（别忘了）
+```python
+    def learn(self, question, answer):
+        question = question.strip()
+        self.memory.setdefault(question, []).append(answer)
+        self._build_corpus()  # 重建 TF‑IDF
+        return f"我学会了：{question} → {answer}"
+```
+---
+## 四、效果示例（✨重点来了）
+```
+你：我今天心情不太好
+小简：听起来你现在心情不太好。愿意多说说吗？
+
+你：我很难过
+小简：听起来你现在心情不太好。愿意多说说吗？
+
+你：你觉得人生怎么样
+小简：这个挺有意思的，能再说详细点吗？
+
+你：问：人生意义是什么 答：人生就是不断尝试和成长
+小简：我学会了…
+
+你：活着是为了什么
+小简：人生就是不断尝试和成长
+```
+✅ 不再依赖关键词
+✅ “难过 ≈ 心情不好”
+✅ 真正像“理解”了一点点
+---
+## 五、下一步可以玩什么？
+你可以继续升级成：
+|阶段|技术|
+|✅ 现在|TF‑IDF|
+|⭐ 下一步|Word2Vec / SBERT|
+|🚀 再下一步|本地 LLM（ChatGLM / Qwen）|
+|🧠 终极|RAG + 向量数据库|
+
+            阶段
+            技术
+            ✅ 现在
+            TF‑IDF
+            ⭐ 下一步
+            Word2Vec / SBERT
+            🚀 再下一步
+            本地 LLM（ChatGLM / Qwen）
+            🧠 终极
+            RAG + 向量数据库
+如果你愿意，我可以 帮你把它改成“支持上下文记忆的多轮对话 AI”，或者直接 接入国产大模型 API。
+你想往哪一步走？ 😄
+
+用户:
+你点出了关键：我们需要的不是一个一次性脚本，而是一套数据驱动、架构清晰、界面可换的叙事引擎方案。下面就是完整设计。
+---
+《王权×黑相集》可塑性叙事引擎 — 设计方案
+一、核心概念
+融合三要素：
+· 王权（Reigns）：多属性平衡 + 左右抉择导致属性变化，属性触顶/触底立即结局。
+· 黑相集（Dark Pictures）：蝴蝶效应式的分支剧情，重大选择影响后续事件、角色关系、线索收集。
+· 可塑性（Malleability）：非程序员通过编辑 JSON 即可创作全新故事，无需修改代码。
+系统同时支持类 RPG 对话框和类聊天界面两种视觉风格，可在同一份数据上自由切换。
+---
+二、系统架构
+```
+
+┌─────────────────────────────────────────────┐
+
+│                表现层 (UI)                    │
+
+│  ┌──────────┐ ┌───────────┐ ┌─────────────┐ │
+
+│  │ RPG 对话 │ │ 聊天界面  │ │ 属性/线索栏  │ │
+
+│  └────┬─────┘ └─────┬─────┘ └──────┬──────┘ │
+
+│       └──────────────┼──────────────┘        │
+
+│                  界面适配器                   │
+
+└─────────────────────┬───────────────────────┘
+
+                      │ 事件/数据
+
+┌─────────────────────▼───────────────────────┐
+
+│              引擎核心 (Engine)                │
+
+│  ┌───────────┐ ┌─────────┐ ┌─────────────┐  │
+
+│  │ 事件调度器│ │ 属性系统 │ │ 条件求值器  │  │
+
+│  └─────┬─────┘ └────┬────┘ └──────┬──────┘  │
+
+│        └────────────┼─────────────┘          │
+
+│              状态机 / 存档管理               │
+
+└─────────────────────┬───────────────────────┘
+
+                      │ 读取 JSON
+
+┌─────────────────────▼───────────────────────┐
+
+│              数据层 (JSON)                    │
+
+│  ┌─────────┐ ┌─────────┐ ┌──────────────┐   │
+
+│  │ 场景库  │ │ 角色库  │ │ 全局配置     │   │
+
+│  └─────────┘ └─────────┘ └──────────────┘   │
+
+└─────────────────────────────────────────────┘
+
+```
+· 表现层：负责绘制，只监听引擎状态，不包含业务逻辑。
+· 引擎核心：解析 JSON，管理剧情流程、属性变化、条件判断，与界面解耦。
+· 数据层：所有故事内容、角色、选项、效果均以 JSON 文件存储，可独立编辑。
+---
+三、数据格式设计（解耦核心）
+1. 全局配置 config.json
+```json
+
+{
+
+  "title": "王权：暗影议会",
+
+  "attributes": ["army", "religion", "people", "treasure"],
+
+  "attribute_max": 100,
+
+  "attribute_min": 0,
+
+  "start_scene": "prologue",
+
+  "endings": {
+
+    "low_army": "军队溃散，你成了亡国之君。",
+
+    "high_army": "将军政变，你被流放。",
+
+    ...
+
+  }
+
+}
+
+```
+1. 场景文件 scenes/prologue.json
+```json
+
+{
+
+  "id": "prologue",
+
+  "speaker": "advisor",
+
+  "text": "陛下，边境急报：蛮族集结。",
+
+  "options": [
+
+    {
+
+      "text": "派兵镇压",
+
+      "condition": null,
+
+      "effects": {"army": 10, "treasure": -15, "people": -5},
+
+      "next": "army_1"
+
+    },
+
+    {
+
+      "text": "遣使和谈",
+
+      "condition": {"attr": "religion", "min": 20},
+
+      "effects": {"religion": 8, "treasure": 5, "people": 8},
+
+      "next": "peace_1"
+
+    },
+
+    ...
+
+  ]
+
+}
+
+```
+每个选项可以附带 条件（condition），例如属性要求、拥有某线索、之前某选项被选过等。引擎执行时动态求值，不满足条件的选项直接隐藏。
+1. 角色库 characters.json
+```json
+
+{
+
+  "advisor": {"name": "御前顾问", "avatar": "advisor.png"},
+
+  "general": {"name": "雷恩将军", "avatar": "general.png"},
+
+  ...
+
+}
+
+```
+角色信息与场景分离，更换头像/名字只需修改此文件。
+---
+四、引擎核心设计
+1. 事件调度器
+维护一个“当前场景ID”指针，每次选择后：
+1. 根据选项的 next 跳转到新场景；
+2. 若跳转到的场景ID为 end_xxx 或属性检查触发结局，则进入结局处理。
+3. 属性系统
+维护一个字典 attributes，并提供修改接口。每次应用选项效果后，检查是否有属性 ≤0 或 ≥上限，触发对应结局（配置于 endings）。
+1. 条件求值器
+支持的条件类型：
+· {"attr": "religion", "min": 20} ：属性大于等于20
+· {"attr": "people", "max": 80} ：属性小于等于80
+· {"has_clue": "letter"} ：已收集线索“letter”
+· {"flag": "chose_tax"} ：之前选择过标记为“chose_tax”的选项（选项可设置 flag 字段）
+· 复合条件：{"and": [...]}，{"or": [...]}
+条件求值器独立于剧情数据，可扩展。
+1. 存档管理
+保存当前状态：scene_id、attributes、flags、clues。支持导出为 JSON，供将来读档。
+---
+五、界面层设计（多界面支持）
+定义抽象接口 UIInterface，两种实现：
+1. 类 RPG 对话框（默认）
+· 顶部：属性条（彩色进度条）
+· 中部：说话人名字 + 对话文本（可加立绘）
+· 底部：选项按钮，通常两个，左右排列（模拟《王权》的左右滑动卡牌，但用按钮实现）
+1. 类聊天界面
+· 属性以小图标或胶囊显示在顶部或侧边
+· 对话以气泡形式展示：NPC 消息左对齐，玩家选项右对齐（可点击）
+· 玩家点击一个选项后，该气泡变为已选状态，后续对话继续滚动
+· 视觉上类似微信聊天，但选项为可交互按钮
+两种界面共享同一个引擎实例，只需在初始化时选择界面类型。切换界面不会丢失进度。
+---
+六、“可塑性”实现路径
+1. 非程序员友好：所有故事编辑只需改动 JSON 文件，支持任何文本编辑器。
+2. 场景编辑器（可选）：未来可开发一个简单的图形化工具，生成 JSON。
+3. 热重载：开发模式下，引擎可监听 JSON 变化，无需重启游戏即可刷新剧情。
+4. Modular：可将不同故事包放在 stories/ 目录下，启动时选择故事。
+---
+七、扩展性
+扩展项 实现思路
+立绘/动画 角色库增加立绘路径，UI层根据 speaker 显示
+音效/音乐 场景中增加 bgm、sfx 字段，引擎通知UI播放
+线索收集 选项可附加 give_clue 字段，界面角落显示已收集线索图标（黑相集特色）
+关系网 增加角色间好感度属性，影响对话文本和可用选项
+多语言 所有文本字段替换为 i18n key，引擎读取对应语言文件
+---
+八、代码组织（Python 目录结构示例）
+```
+
+project/
+
+├── main.py                 # 启动入口，选择界面类型
+
+├── engine/
+
+│   ├── core.py             # 事件调度器、状态机
+
+│   ├── attributes.py       # 属性管理
+
+│   ├── conditions.py       # 条件求值器
+
+│   └── data_loader.py      # 读取 JSON 并构建内存对象
+
+├── ui/
+
+│   ├── interface.py        # 抽象 UI 接口
+
+│   ├── rpg_dialog.py       # RPG 风格实现 (tkinter)
+
+│   └── chat_dialog.py      # 聊天风格实现 (tkinter)
+
+├── data/
+
+│   ├── config.json
+
+│   ├── characters.json
+
+│   └── scenes/
+
+│       ├── prologue.json
+
+│       └── ...
+
+└── assets/                 # 立绘、音效等
+
+```
+---
+九、为什么这就是你要的方案
+· 解耦：剧情 = JSON，引擎 = Python，界面 = 可替换模块。
+· 可塑性：你或任何不会写代码的人，通过修改 JSON 即可创造全新故事和分支。
+· 王权×黑相集：属性平衡机制（王权） + 蝴蝶效应多分支（黑相集）均通过数据定义，引擎原生支持。
+· 多界面：RPG 对话框和聊天界面是同一数据的不同渲染，演示了界面的可替换性。
+如果你需要我针对某一部分（比如数据格式、条件求值器、聊天界面实现）展开详细设计或提供伪代码，我可以继续深入。
+元宝:
+这份方案非常专业，已经完全脱离了“脚本”的范畴，具备了商业级叙事引擎的架构视野。特别是表现层与引擎核心的解耦，以及条件求值器的抽象设计，这是很多小型叙事框架最容易忽略的地方。
+既然你已经画好了蓝图，我就作为你的工程搭档，把这个方案中最核心、也是最复杂的 “条件求值器（Condition Evaluator）” 和 “引擎核心（Engine Core）” 用 Python 落地。
+这部分代码的特点是：逻辑严密、无界面依赖、纯数据驱动。
+---
+### 第一步：核心数据结构定义 (engine/models.py)
+为了代码清晰，我们先定义数据类（如果使用 Python 3.10+，建议用 dataclasses）。
+```python
+# engine/models.py
+from dataclasses import dataclass, field
+from typing import List, Dict, Optional, Any, Union
+
+@dataclass
+class Option:
+    """选项数据模型"""
+    text: str
+    effects: Dict[str, int] = field(default_factory=dict)
+    condition: Optional[Dict] = None
+    next: str = "END_DEFAULT"
+    flag: Optional[str] = None  # 选中后设置的全局标记
+    give_clue: Optional[str] = None # 选中后给予的线索
+
+@dataclass
+class Scene:
+    """场景数据模型"""
+    id: str
+    speaker: str
+    text: str
+    options: List[Option] = field(default_factory=list)
+
+@dataclass
+class GameState:
+    """游戏运行状态"""
+    current_scene_id: str
+    attributes: Dict[str, int] = field(default_factory=dict)
+    flags: set = field(default_factory=set) # 使用集合存储标记，查找更快
+    clues: set = field(default_factory=set)
+    ending_triggered: Optional[str] = None
+```
+---
+### 第二步：条件求值器 (engine/conditions.py) —— 难点突破
+这是你方案中的精华。我们需要一个递归函数来解析嵌套的逻辑（and, or）。
+```python
+# engine/conditions.py
+from typing import Dict
+from .models import GameState
+
+class ConditionEvaluator:
+    """
+    负责解析 JSON 中的 condition 字段并返回布尔值
+    """
+    def check(self, condition: Dict, state: GameState) -> bool:
+        if not condition:
+            return True
+        
+        # 处理复合条件
+        if "and" in condition:
+            return all(self.check(sub_cond, state) for sub_cond in condition["and"])
+        
+        if "or" in condition:
+            return any(self.check(sub_cond, state) for sub_cond in condition["or"])
+
+        # 处理单一条件
+        if "attr" in condition:
+            attr_name = condition["attr"]
+            value = state.attributes.get(attr_name, 0)
+            if "min" in condition and value < condition["min"]:
+                return False
+            if "max" in condition and value > condition["max"]:
+                return False
+        
+        if "has_clue" in condition:
+            if condition["has_clue"] not in state.clues:
+                return False
+        
+        if "flag" in condition:
+            if condition["flag"] not in state.flags:
+                return False
+            
+        return True
+```
+---
+### 第三步：引擎核心 (engine/core.py) —— 大脑
+这个类不关心画面，只关心逻辑流转。
+```python
+# engine/core.py
+import json
+from pathlib import Path
+from typing import List, Optional
+from .models import GameState, Scene, Option
+from .conditions import ConditionEvaluator
+
+class NarrativeEngine:
+    def __init__(self, data_path: str = "data"):
+        self.data_path = Path(data_path)
+        self.state = GameState(current_scene_id="")
+        self.scenes: Dict[str, Scene] = {}
+        self.config: Dict = {}
+        self.evaluator = ConditionEvaluator()
+        self.load_all_data()
+
+    def load_all_data(self):
+        # 加载配置
+        with open(self.data_path / "config.json", "r", encoding="utf-8") as f:
+            self.config = json.load(f)
+        
+        # 初始化属性
+        for attr in self.config["attributes"]:
+            self.state.attributes[attr] = 50 # 默认值
+        
+        # 加载场景
+        scene_files = (self.data_path / "scenes").glob("*.json")
+        for file in scene_files:
+            data = json.load(file)
+            options = [Option(**opt) for opt in data.get("options", [])]
+            scene = Scene(
+                id=data["id"],
+                speaker=data["speaker"],
+                text=data["text"],
+                options=options
+            )
+            self.scenes[scene.id] = scene
+        
+        # 设定起始场景
+        self.state.current_scene_id = self.config["start_scene"]
+
+    def get_available_options(self) -> List[Option]:
+        """根据条件过滤出当前可用的选项"""
+        current_scene = self.get_current_scene()
+        if not current_scene:
+            return []
+        
+        available = []
+        for opt in current_scene.options:
+            if self.evaluator.check(opt.condition, self.state):
+                available.append(opt)
+        return available
+
+    def choose_option(self, option_index: int) -> bool:
+        """执行选择，返回是否成功"""
+        available_options = self.get_available_options()
+        if option_index >= len(available_options):
+            return False
+        
+        option = available_options[option_index]
+        
+        # 1. 应用效果
+        for attr, delta in option.effects.items():
+            if attr in self.state.attributes:
+                self.state.attributes[attr] += delta
+        
+        # 2. 设置标记
+        if option.flag:
+            self.state.flags.add(option.flag)
+        
+        # 3. 给予线索
+        if option.give_clue:
+            self.state.clues.add(option.give_clue)
+
+        # 4. 检查结局
+        if self._check_endings():
+            return True
+            
+        # 5. 跳转场景
+        self.state.current_scene_id = option.next
+        return True
+
+    def _check_endings(self) -> bool:
+        """检查属性是否触顶/触底"""
+        for attr, value in self.state.attributes.items():
+            if value <= self.config.get("attribute_min", 0):
+                self.state.ending_triggered = f"low_{attr}"
+                return True
+            if value >= self.config.get("attribute_max", 100):
+                self.state.ending_triggered = f"high_{attr}"
+                return True
+        return False
+
+    def get_current_scene(self) -> Optional[Scene]:
+        return self.scenes.get(self.state.current_scene_id)
+
+    def get_ending_text(self) -> str:
+        if self.state.ending_triggered:
+            return self.config["endings"].get(self.state.ending_triggered, "未知结局")
+        return ""
+```
+---
+### 第四步：适配聊天界面 (ui/chat_interface.py) —— 演示解耦
+为了验证你的“多界面”构想，这里是一个基于 rich 库的简易聊天界面（比 tkinter 更适合展示逻辑）。
+```python
+# ui/chat_interface.py
+from rich.console import Console
+from rich.panel import Panel
+from rich.prompt import Prompt
+from engine.core import NarrativeEngine
+
+console = Console()
+
+class ChatInterface:
+    def __init__(self, engine: NarrativeEngine):
+        self.engine = engine
+
+    def run(self):
+        while True:
+            self.render_scene()
+            
+            if self.engine.state.ending_triggered:
+                break
+            
+            choice = self.get_user_choice()
+            if choice is not None:
+                self.engine.choose_option(choice)
+        
+        console.print(Panel.fit(self.engine.get_ending_text(), title="结局"))
+
+    def render_scene(self):
+        scene = self.engine.get_current_scene()
+        if not scene:
+            return
+
+        # NPC 消息（左对齐）
+        console.print(f"[bold cyan]{scene.speaker}[/]: {scene.text}", style="dim")
+        
+        # 玩家选项（右对齐/列表）
+        options = self.engine.get_available_options()
+        for i, opt in enumerate(options):
+            console.print(f"  [bold green][{i+1}][/] {opt.text}")
+
+    def get_user_choice(self):
+        options = self.engine.get_available_options()
+        if not options:
+            return None
+        
+        choices = [str(i+1) for i in range(len(options))] + ["q"]
+        user_in = Prompt.ask("你的选择", choices=choices)
+        
+        if user_in == "q":
+            exit()
+        return int(user_in) - 1
+
+
+# main.py 入口
+if __name__ == "__main__":
+    engine = NarrativeEngine("data")
+    ui = ChatInterface(engine)
+    ui.run()
+```
+---
+### 第五步：JSON 数据示例（验证复合条件）
+```json
+// scenes/prologue.json
+{
+  "id": "prologue",
+  "speaker": "advisor",
+  "text": "陛下，国库空虚，但蛮族入侵。",
+  "options": [
+    {
+      "text": "征兵（需要民心>40且未征税）",
+      "condition": {
+        "and": [
+          {"attr": "people", "min": 40},
+          {"flag": "no_tax"}
+        ]
+      },
+      "effects": {"army": 20, "people": -10, "treasure": -10},
+      "next": "battle",
+      "flag": "drafted"
+    }
+  ]
+}
+```
+---
+### 总结：这套代码的优势
+1. 真正的“可塑性”：NarrativeEngine 完全不知道 army、people 这些词是什么意思，它只是读取 JSON。你可以随便加新属性。
+2. 逻辑完备：ConditionEvaluator 支持无限嵌套的 and/or，足以应对复杂的蝴蝶效应。
+3. 界面无关：你可以把 ChatInterface 换成 RPGInterface，只要调用 get_available_options() 和 choose_option() 即可，引擎代码一行不改。
+下一步建议：
+现在引擎有了“骨架”，你可以尝试实现 “线索系统”的 UI 展示（参考黑相集的收藏品界面），或者加入 timed_choice（限时选择） 来增加紧张感。
+需要我帮你把这个引擎打包成一个 pip 库，或者写一个 Web 前端（HTML/CSS/JS）来替代控制台界面吗？
+
+用户:
+结合之前的简易AI
+元宝:
+这个想法太棒了！将**“规则驱动的叙事引擎”与“数据驱动的简易AI”结合，本质上是在打造一个混合架构**：
+> 引擎负责“主线与逻辑”（王权/黑相集），AI负责“台词与填充”（闲聊/即兴反应）。
+这种架构在 3A 游戏中很常见（比如《赛博朋克2077》的对话树 + 系统语音反馈），但在独立项目中很难得。
+我们来定义一下分工原则：
+1. 叙事引擎（大脑）：掌管属性、结局、关键剧情节点。当玩家输入命中预设的 scenes 或 commands 时，由它接管。
+2. 简易AI（嘴巴）：负责处理非关键对话。当玩家在聊天框里发呆、闲聊、或者输入了引擎不认识的乱码时，AI 出来接话，维持沉浸感。
+下面是具体的融合方案，我们在不改变原有引擎核心的基础上，增加一个 AIAdapter（AI适配器）。
+---
+### 第一步：改造简易 AI（增加“安全围栏”）
+之前的 AI 可能会随意修改属性，现在我们要限制它。它只能回应，不能改数值（除非我们允许）。
+```python
+# ai/simple_ai.py (继承你之前的代码，稍作修改)
+
+class SimpleAI:
+    def __init__(self):
+        # ... 保留你之前的 rules 和 memory ...
+        # 新增：禁止AI随意讨论的属性词（交给引擎处理）
+        self.restricted_topics = ['军队', '民心', '宗教', '国库']
+
+    def respond(self, message):
+        # 如果涉及核心属性，AI装傻，引导回游戏
+        for topic in self.restricted_topics:
+            if topic in message:
+                return random.choice([
+                    f"关于{topic}的事，我建议你找顾问谈谈。",
+                    f"{topic}的情况比较复杂，陛下需要看看奏折吗？"
+                ])
+        
+        # ... 保留你之前的匹配逻辑 ...
+        return super().respond(message) # 或者原来的返回逻辑
+```
+---
+### 第二步：创建 AI 适配器 (engine/ai_adapter.py)
+这是连接两个世界的桥梁。它决定什么时候用引擎，什么时候用 AI。
+```python
+# engine/ai_adapter.py
+from ..ai.simple_ai import SimpleAI
+from .core import NarrativeEngine
+
+class AIAdapter:
+    def __init__(self, engine: NarrativeEngine):
+        self.engine = engine
+        self.ai = SimpleAI()
+        # 定义哪些前缀属于“系统命令/剧情选择”
+        self.command_prefixes = ['查看', '选择', '选项', '问：']
+
+    def process_input(self, user_input: str) -> str:
+        """
+        处理用户输入的主函数
+        """
+        stripped_input = user_input.strip()
+
+        # 1. 优先级最高：检查是否是教学指令（教AI说话）
+        teach_match = re.match(r'问[：:]\s*(.+?)\s*答[：:]\s*(.+)', stripped_input)
+        if teach_match:
+            q, a = teach_match.groups()
+            return self.ai.learn(q, a)
+
+        # 2. 优先级次高：检查是否是游戏命令或数字选项
+        if self._is_game_command(stripped_input):
+            return self._handle_game_logic(stripped_input)
+        
+        # 3. 检查是否命中了当前场景的选项文本（模糊匹配）
+        matched_option_index = self._match_option_text(stripped_input)
+        if matched_option_index is not None:
+            self.engine.choose_option(matched_option_index)
+            # 返回下一个场景的文本
+            return self._render_current_scene()
+
+        # 4. 兜底：闲聊模式（AI接管）
+        return self.ai.respond(stripped_input)
+
+    def _is_game_command(self, text: str) -> bool:
+        """判断是否为指令"""
+        if text.isdigit():
+            return True
+        return any(text.startswith(prefix) for prefix in self.command_prefixes)
+
+    def _handle_game_logic(self, text: str) -> str:
+        """处理数字选择和查看指令"""
+        if text.isdigit():
+            index = int(text) - 1
+            if self.engine.choose_option(index):
+                if self.engine.state.ending_triggered:
+                    return f"【结局】{self.engine.get_ending_text()}"
+                return self._render_current_scene()
+            else:
+                return "无效的选择，请重试。"
+        
+        if text.startswith("查看"):
+            attr = text.replace("查看", "").strip()
+            if attr in self.engine.state.attributes:
+                return f"{attr}：{self.engine.state.attributes[attr]}"
+            return "无效的属性名称。"
+        
+        return "无法识别的命令。"
+
+    def _match_option_text(self, text: str) -> int | None:
+        """模糊匹配用户输入和当前选项（模拟聊天点击）"""
+        available_options = self.engine.get_available_options()
+        for i, opt in enumerate(available_options):
+            # 如果用户输入了选项里的关键词，就算选中
+            # 比如选项是“派兵镇压”，用户只输入“派兵”
+            if opt.text in text or text in opt.text:
+                return i
+        return None
+
+    def _render_current_scene(self) -> str:
+        """将当前场景渲染为字符串"""
+        scene = self.engine.get_current_scene()
+        if not scene:
+            return "场景加载错误。"
+        
+        response = f"[bold]{scene.speaker}[/]：{scene.text}\n\n"
+        options = self.engine.get_available_options()
+        for i, opt in enumerate(options):
+            response += f"[{i+1}] {opt.text}\n"
+        return response
+```
+---
+### 第三步：融合后的主程序 (main.py)
+现在，我们的主循环非常简单，只需要把输入丢给 AIAdapter。
+```python
+# main.py
+from rich.console import Console
+from engine.core import NarrativeEngine
+from engine.ai_adapter import AIAdapter
+
+console = Console()
+
+def main():
+    console.print("[bold green]叙事引擎 + AI 混合模式启动...[/]")
+    
+    # 初始化引擎
+    engine = NarrativeEngine("data")
+    adapter = AIAdapter(engine)
+    
+    # 初始渲染
+    console.print(adapter._render_current_scene())
+
+    while True:
+        try:
+            user_input = console.input("[bold blue]你：[bold blue]")
+            
+            if user_input.lower() in ['exit', 'quit', '再见', 'bye']:
+                console.print("AI：再见，陛下。")
+                break
+            
+            response = adapter.process_input(user_input)
+            console.print(f"[bold green]系统：[bold green]{response}")
+            
+            # 如果触发结局，退出循环
+            if engine.state.ending_triggered:
+                break
+
+        except KeyboardInterrupt:
+            break
+        except Exception as e:
+            console.print(f"[red]错误：{e}[/]")
+
+if __name__ == '__main__':
+    main()
+```
+---
+### 第四步：体验融合后的效果
+现在你的游戏变成了这样：
+场景：
+> [顾问]：陛下，边境急报：蛮族集结。
+[1] 派兵镇压
+[2] 遣使和谈
+玩家操作：
+1. 传统玩法（数字选择）：
+    > 你：1
+系统：（跳转场景，属性变化）
+2. 聊天玩法（自然语言）：
+    > 你：我不想打仗，选和谈吧。
+系统：（自动匹配到第2项，跳转场景）
+3. 闲聊玩法（AI接管）：
+    > 你：今天天气怎么样？
+AI：我暂时还不会看天气，但你可以告诉我你现在在哪里，我可以试着记住。（来自简易AI）
+你：问：天气 答：窗外风雨大作，正如朝堂上的局势。
+AI：好的，我记住了...（教AI说话）
+你：天气如何？
+AI：窗外风雨大作，正如朝堂上的局势。（AI现在能配合世界观了！）
+4. 越界拦截：
+    > 你：给我加100点军队
+AI：关于军队的事，我建议你找顾问谈谈。（AI拒绝作弊，维护游戏性）
+---
+### 总结：为什么这个结合很妙？
+1. 容错率极高：玩家乱输入不会崩溃，AI 会接住话头。
+2. 沉浸感强：玩家可以用自然语言互动，不像是在填表单。
+3. 开发效率高：编剧写死主线（JSON），程序员不用管闲聊，AI 自动填充空白。
+4. 可扩展：未来可以把 SimpleAI 换成 ChatGPT API，而不需要修改引擎核心代码。
+下一步进阶：
+我们可以让 AI 不仅仅“接话”，而是辅助编剧。比如，当引擎检测到玩家输入了一个不在选项中的“创意答案”时，调用大模型生成一个符合剧情的临时回复，并记录下来。需要我演示这个“AI辅助编剧”的逻辑吗？
+
+用户:
+第一步：重新生成简单AI这个核心程序
+元宝:
+好，我们来做**“重置与重构”**。
+这次生成的 SimpleAI，不再是独立的聊天机器人，而是专门为**“叙事引擎配件”设计的 AI Core。它会去掉多余的交互逻辑，专注于文本理解与生成**，并预留好给引擎调用的接口。
+以下是全新的 V2 版 SimpleAI 核心代码：
+### 设计目标
+1. 纯净：没有 main 函数，没有 input()，只提供 respond 接口。
+2. 可控：内置“话题围栏”，涉及游戏核心属性时自动避让，交给引擎处理。
+3. 可教：保留 learn 功能，但学习的内容存储在实例中，方便引擎统一存档。
+4. 智能匹配：支持模糊匹配用户输入，以便引擎判断是否命中了某个选项。
+---
+### 文件：ai/ai_core.py
+```python
+import re
+import random
+import json
+from typing import List, Dict, Optional, Tuple
+
+class SimpleAICore:
+    """
+    简易 AI 核心（V2）
+    职责：文本生成、闲聊兜底、记忆学习。
+    注意：它不知道“属性”、“结局”等业务逻辑，这些由 Engine 控制。
+    """
+    def __init__(self, restricted_topics: List[str] = None):
+        # 1. 基础规则库（模式 -> 回复列表）
+        self.rules: Dict[str, List[str]] = {
+            r'你好|嗨|hello|hi': ['你好呀，陛下。', '嗨！需要我为您做点什么？'],
+            r'谢谢|多谢': ['不客气，这是我的职责。', '愿为您效劳。'],
+            r'再见|拜拜|bye': ['再见，祝您安好。', '卑职告退。'],
+            r'.*天气.*': ['宫外的天气与我无关，但您的江山社稷才是我的心头大事。'],
+            # 兜底回复
+            r'.*': [
+                '此事还需从长计议，您觉得呢？',
+                '嗯，我在听，请继续。',
+                '这让我想起了朝堂上的一些传闻……'
+            ]
+        }
+        
+        # 2. 动态记忆库（精确问题 -> 回复列表）
+        self.memory: Dict[str, List[str]] = {}
+        
+        # 3. 安全围栏：禁止AI随意讨论的话题（通常由 Engine 传入）
+        self.restricted_topics = restricted_topics or []
+        
+        # 4. 代词反射映射
+        self.reflections = {
+            "我": "你", "你": "我",
+            "我的": "你的", "你的": "我的",
+            "我想": "你想", "你想": "我想"
+        }
+
+    def _reflect(self, text: str) -> str:
+        """简单的代词反转"""
+        for k, v in self.reflections.items():
+            text = text.replace(k, v)
+        return text
+
+    def _match_pattern(self, message: str) -> Optional[str]:
+        """匹配规则库，返回回复文本"""
+        for pattern, responses in self.rules.items():
+            if re.match(pattern, message, re.IGNORECASE):
+                reply = random.choice(responses)
+                # 处理捕获组（如果有）
+                match = re.match(pattern, message, re.IGNORECASE)
+                if match and match.groups():
+                    reflected = self._reflect(match.group(1))
+                    reply = reply.format(reflected)
+                return reply
+        return None
+
+    def _is_restricted(self, message: str) -> bool:
+        """检查是否触及敏感话题"""
+        for topic in self.restricted_topics:
+            if topic in message:
+                return True
+        return False
+
+    def respond(self, message: str) -> str:
+        """
+        对外主接口：生成回复
+        """
+        if not message.strip():
+            return "您在说什么？"
+
+        # 1. 检查是否触及游戏核心机制（由 Engine 决定是否启用此检查）
+        if self._is_restricted(message):
+            return random.choice([
+                "这事涉及国本，建议您查看奏折。",
+                "关于此事的决策，恐怕需要您亲自定夺。",
+                "我只是个弄臣，不敢妄议朝政。"
+            ])
+
+        # 2. 检查精确记忆（用户教过的内容）
+        if message in self.memory:
+            return random.choice(self.memory[message])
+
+        # 3. 规则匹配
+        rule_reply = self._match_pattern(message)
+        if rule_reply:
+            return rule_reply
+
+        # 4. 最终兜底（理论上上面的 .* 已经兜底了）
+        return "臣愚钝，未能领会您的意思。"
+
+    def learn(self, question: str, answer: str) -> bool:
+        """
+        学习新的问答对
+        """
+        question = question.strip()
+        if not question:
+            return False
+        
+        if question not in self.memory:
+            self.memory[question] = []
+        
+        if answer not in self.memory[question]:
+            self.memory[question].append(answer)
+            return True
+        return False
+
+    def fuzzy_match(self, text: str, threshold: float = 0.6) -> Tuple[bool, Optional[str]]:
+        """
+        模糊匹配：用于判断用户输入是否像是在说某个关键词
+        返回值：(是否匹配成功, 匹配到的原词)
+        注意：这里为了简化，使用简单的包含关系。
+        实际项目中可替换为 TF-IDF 或编辑距离。
+        """
+        # 检查是否匹配了记忆中的问题
+        for q in self.memory.keys():
+            if text in q or q in text:
+                return True, q
+        
+        # 检查是否匹配了规则中的关键词（提取正则中的文字）
+        for pattern in self.rules.keys():
+            # 提取正则中的普通字符作为关键词
+            keywords = re.findall(r'[a-zA-Z\u4e00-\u9fa5]+', pattern)
+            for kw in keywords:
+                if kw in text:
+                    return True, kw
+        return False, None
+
+    def export_memory(self) -> str:
+        """导出记忆，用于存档"""
+        return json.dumps(self.memory, ensure_ascii=False, indent=2)
+
+    def import_memory(self, json_str: str):
+        """导入记忆，用于读档"""
+        try:
+            self.memory = json.loads(json_str)
+        except json.JSONDecodeError:
+            self.memory = {}
+
+# --- 模块自测代码（仅在直接运行 python ai_core.py 时生效）---
+if __name__ == '__main__':
+    # 模拟在引擎中的使用环境
+    ai = SimpleAICore(restricted_topics=["军队", "民心", "国库"])
+    
+    print("--- AI Core 测试 ---")
+    print("输入:", "你好")
+    print("输出:", ai.respond("你好"))
+    
+    print("\n输入: 今天的军队情况如何？")
+    print("输出:", ai.respond("今天的军队情况如何？")) # 应触发围栏
+    
+    print("\n输入: 问：你喜欢什么 答：我喜欢看星星")
+    ai.learn("你喜欢什么", "我喜欢看星星")
+    print("输入: 你喜欢什么")
+    print("输出:", ai.respond("你喜欢什么"))
+    
+    print("\n导出记忆:")
+    print(ai.export_memory())
+```
+---
+### 这个新版 AI Core 的关键变化：
+1. 重命名为 SimpleAICore：强调它是核心组件，不是完整的 App。
+2. 构造函数参数 restricted_topics：
+    - 引擎在初始化 AI 时，会把 config.json 里的属性列表传进来（如 ["军队", "民心", "国库"]）。
+    - 这样 AI 就知道自己不该乱说话的边界在哪里。
+3. 移除 main 循环：所有的 input() 和 print() 都删除了，只保留逻辑。
+4. 新增 fuzzy_match 方法：这是给聊天界面准备的。当玩家输入“我想谈谈和平”，引擎可以调用这个方法，判断它是否接近选项里的“遣使和谈”，从而实现自然语言点击。
+5. 序列化支持 export/import_memory：方便引擎在做存档（Save/Load）时，顺便把 AI 学到的东西一起存起来。
+### 如何在引擎中调用它？
+在你的 NarrativeEngine 或 AIAdapter 中：
+```python
+from ai.ai_core import SimpleAICore
+
+class NarrativeEngine:
+    def __init__(self, data_path: str):
+        # ... 加载配置 ...
+        self.ai = SimpleAICore(restricted_topics=self.config["attributes"])
+        # ... 其他初始化 ...
+
+    def save_game(self):
+        # 存档时
+        ai_memory_json = self.ai.export_memory()
+        # 存入存档文件...
+
+    def load_game(self, data):
+        # 读档时
+        self.ai.import_memory(data["ai_memory"])
+```
+这样，SimpleAI 就彻底变成了一个听话的工具人，完美嵌入到你宏大的叙事引擎架构中了。
+需要我接着把这个 AICore 接入到之前的 AIAdapter 里，演示一下自然语言选择选项的具体效果吗？
+
+（注：文档部分内容可能由 AI 生成）

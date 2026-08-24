@@ -1,0 +1,21 @@
+{
+  "id": "planet_landing",
+  "speaker": "captain",
+  "text": "成功着陆。这颗行星大气层含氧量极高，地表有植物痕迹。侦察队发现了一处废弃的外星设施，看起来是一座能源站。",
+  "options": [
+    {
+      "text": "派工程队探索能源站",
+      "effects": {"energy": 30, "crew": -10, "hull": -5},
+      "condition": {"and": [
+        {"attr": "crew", "min": 20}
+      ]},
+      "give_clue": "ancient_power_source",
+      "next": "calm_waters"
+    },
+    {
+      "text": "采集地表资源后离开",
+      "effects": {"oxygen": 20, "hull": 10},
+      "next": "deep_space"
+    }
+  ]
+}

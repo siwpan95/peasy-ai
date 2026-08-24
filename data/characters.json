@@ -1,0 +1,7 @@
+{
+  "computer": {"name": "舰载主机", "avatar": null},
+  "engineer": {"name": "总工程师 林", "avatar": null},
+  "captain":  {"name": "大副 陈", "avatar": null},
+  "alien":    {"name": "未知信号源", "avatar": null},
+  "doctor":   {"name": "医疗官 赵", "avatar": null}
+}

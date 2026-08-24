@@ -1,0 +1,228 @@
+{
+  "trained_at": "2026-07-04T21:11:02.372442",
+  "total_learned": 24,
+  "records": [
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "scene",
+      "question": "感知检定是什么结果",
+      "answer": "成功：掷出11，目标12，差值1。",
+      "context": {
+        "node": "1.1",
+        "skill": "感知"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "scene",
+      "question": "在1.1场景中发生了什么",
+      "answer": "听到墙后传来微弱的抓挠声……",
+      "context": {
+        "node": "1.1"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "scene",
+      "question": "感知技能有什么用",
+      "answer": "感知用于1.1场景的检定，目标值12。",
+      "context": {
+        "skill": "感知"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "scene",
+      "question": "潜行检定是什么结果",
+      "answer": "成功：掷出6，目标12，差值6。",
+      "context": {
+        "node": "1.2",
+        "skill": "潜行"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "scene",
+      "question": "在1.2场景中发生了什么",
+      "answer": "你悄无声息地潜入了营地。",
+      "context": {
+        "node": "1.2"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "scene",
+      "question": "潜行技能有什么用",
+      "answer": "潜行用于1.2场景的检定，目标值12。",
+      "context": {
+        "skill": "潜行"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "scene",
+      "question": "近战检定是什么结果",
+      "answer": "成功：掷出11，目标12，差值1。",
+      "context": {
+        "node": "2.1",
+        "skill": "近战"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "scene",
+      "question": "在2.1场景中发生了什么",
+      "answer": "刀锋相交，火花四溅！",
+      "context": {
+        "node": "2.1"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "scene",
+      "question": "近战技能有什么用",
+      "answer": "近战用于2.1场景的检定，目标值12。",
+      "context": {
+        "skill": "近战"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "combat",
+      "question": "巨鼠是什么",
+      "answer": "巨鼠，HP27。战斗中的敌人。",
+      "context": {
+        "enemy": "巨鼠"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "combat",
+      "question": "攻击巨鼠的躯干造成了多少伤害",
+      "answer": "造成了5点伤害。",
+      "context": {
+        "enemy": "巨鼠",
+        "action": "劈砍"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "combat",
+      "question": "如何对付巨鼠",
+      "answer": "使用劈砍战术，造成了5点伤害。它仍在战斗中。",
+      "context": {
+        "enemy": "巨鼠"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "combat",
+      "question": "哥布林哨兵是什么",
+      "answer": "哥布林哨兵，HP30。战斗中的敌人。",
+      "context": {
+        "enemy": "哥布林哨兵"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "combat",
+      "question": "攻击哥布林哨兵的躯干造成了多少伤害",
+      "answer": "造成了8点伤害。",
+      "context": {
+        "enemy": "哥布林哨兵",
+        "action": "劈砍"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "combat",
+      "question": "如何对付哥布林哨兵",
+      "answer": "使用劈砍战术，造成了8点伤害。它仍在战斗中。",
+      "context": {
+        "enemy": "哥布林哨兵"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "combat",
+      "question": "亡灵守卫是什么",
+      "answer": "亡灵守卫，HP11。战斗中的敌人。",
+      "context": {
+        "enemy": "亡灵守卫"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "combat",
+      "question": "攻击亡灵守卫的躯干造成了多少伤害",
+      "answer": "造成了5点伤害。",
+      "context": {
+        "enemy": "亡灵守卫",
+        "action": "劈砍"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "combat",
+      "question": "如何对付亡灵守卫",
+      "answer": "使用劈砍战术，造成了5点伤害。它仍在战斗中。",
+      "context": {
+        "enemy": "亡灵守卫"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "character",
+      "question": "全哥的属性是什么",
+      "answer": "ST12(力量) DX13(敏捷) IQ14(智力) HT11(体质)。",
+      "context": {
+        "name": "全哥"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "character",
+      "question": "全哥的调查技能等级是多少",
+      "answer": "等级14（Average难度）。",
+      "context": {
+        "name": "全哥"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "character",
+      "question": "全哥的潜行技能等级是多少",
+      "answer": "等级13（Average难度）。",
+      "context": {
+        "name": "全哥"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "character",
+      "question": "全哥装备了短剑吗",
+      "answer": "是的装备了短剑。",
+      "context": {
+        "name": "全哥"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "character",
+      "question": "全哥装备了皮甲吗",
+      "answer": "是的装备了皮甲。",
+      "context": {
+        "name": "全哥"
+      }
+    },
+    {
+      "time": "2026-07-04T21:11:02",
+      "source": "character",
+      "question": "全哥装备了火把吗",
+      "answer": "是的装备了火把。",
+      "context": {
+        "name": "全哥"
+      }
+    }
+  ]
+}

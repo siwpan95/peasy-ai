@@ -1,0 +1,49 @@
+{
+  "手电筒": {
+    "name": "手电筒",
+    "type": "tool",
+    "slot": "hand",
+    "effects": [{"tag_mod": "remove:低能见度", "range": "5m"}],
+    "uses": -1,
+    "description": "一把老式手电筒，电池还很足。"
+  },
+  "急救包": {
+    "name": "急救包",
+    "type": "consumable",
+    "slot": "backpack",
+    "effects": [{"restore_hp": "1d6"}],
+    "uses": 1,
+    "description": "标准急救包，包含绷带和消毒液。"
+  },
+  "防弹背心": {
+    "name": "防弹背心",
+    "type": "armor",
+    "slot": "body",
+    "dr": 4,
+    "dr_location": "躯干",
+    "penalty": {"dx": -1},
+    "description": "轻型防弹背心，略微影响灵活性。"
+  },
+  "手枪": {
+    "name": "手枪",
+    "type": "weapon",
+    "slot": "hand",
+    "damage": "2d6 pi+",
+    "description": "标准 9mm 半自动手枪。"
+  },
+  "撬棍": {
+    "name": "撬棍",
+    "type": "tool",
+    "slot": "hand",
+    "effects": [{"tool_bonus": 2, "skill": "ST"}],
+    "damage": "1d6+1 cr",
+    "description": "一根有些磨损的撬棍，破门破墙都好用。"
+  },
+  "铜镜": {
+    "name": "铜镜",
+    "type": "key_item",
+    "slot": "hand",
+    "effects": [{"psychic_resistance": -1}],
+    "description": "一面直径20厘米的古铜镜，镜背刻有倒转的炼金符号。"
+  }
+}

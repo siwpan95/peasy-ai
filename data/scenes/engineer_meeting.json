@@ -1,0 +1,22 @@
+{
+  "id": "engineer_meeting",
+  "speaker": "engineer",
+  "text": "船长，引擎核心晶体出现裂痕。我们可以临时焊接修补，但会消耗大量能源；或者更换备用晶体，但需要全体船员配合搬运。",
+  "options": [
+    {
+      "text": "焊接修补（消耗能源）",
+      "effects": {"energy": -25, "hull": 10},
+      "next": "calm_waters"
+    },
+    {
+      "text": "更换备用晶体（动员船员）",
+      "effects": {"crew": -10, "energy": 15, "hull": -5},
+      "next": "calm_waters"
+    },
+    {
+      "text": "两者都不选，冒险继续航行",
+      "effects": {"hull": -20, "energy": -10},
+      "next": "near_miss"
+    }
+  ]
+}

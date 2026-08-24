@@ -1,0 +1,18 @@
+{
+  "id": "near_miss",
+  "speaker": "computer",
+  "text": "警报解除。曲速引擎勉强稳定，但船体承受了巨大压力。前方探测器发现一颗类地行星，是否降落？",
+  "options": [
+    {
+      "text": "降落检修",
+      "effects": {"hull": 15, "oxygen": 20, "energy": -10},
+      "condition": {"attr": "hull", "min": 10},
+      "next": "planet_landing"
+    },
+    {
+      "text": "继续航行",
+      "effects": {"hull": -10, "crew": -5},
+      "next": "deep_space"
+    }
+  ]
+}

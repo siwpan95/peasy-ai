@@ -1,0 +1,308 @@
+{
+  "schema_version": "1.0",
+  "name": "easy-ai-enhanced",
+  "version": "3.0",
+  "description": "增强版 AI 知识配置：含机器学习、深度学习、NLP、CV 等核心概念",
+
+  "safety": {
+    "enabled": false,
+    "keywords": [],
+    "response": ["抱歉，我无法回答这个问题。"]
+  },
+
+  "rules": [
+    {
+      "pattern": "你好|嗨|hello|hi|哈喽|在吗|在不在",
+      "responses": [
+        "你好呀！我是 easy-ai，一个集成了马尔科夫链和神经网络的智能助手。有什么想了解的？",
+        "嗨！我最近升级了，现在懂很多 AI 知识，想聊聊人工智能吗？"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "pattern": "你叫什么|你是谁|你的名字|介绍.*自己|自我介绍",
+      "responses": [
+        "我叫 easy-ai，是一个基于 Python 的智能对话系统。我的核心包括规则匹配、模糊语义搜索、马尔科夫链文本生成和神经网络意图分类。",
+        "我是 easy-ai v3.0，一个集成了传统 NLP（马尔科夫链、TF-IDF）和深度学习（MLP、CNN）的混合 AI 助手。"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "pattern": "谢谢|多谢|感谢|Thanks|thank|3Q",
+      "responses": [
+        "不客气！有问题随时问我。",
+        "客气啦，能帮到你就好~"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "pattern": "再见|拜拜|bye|see you|下次见|回见",
+      "responses": [
+        "再见！祝你今天有新的 AI 发现~",
+        "拜拜，期待下次一起探讨人工智能！"
+      ],
+      "confidence": 0.95
+    },
+
+    {
+      "pattern": ".*什么是.*人工智能|.*AI.*是什么|.*artificial intelligence.*",
+      "responses": [
+        "人工智能（AI）是计算机科学的一个分支，目标是创建能够模拟人类智能的系统。它包括机器学习、深度学习、自然语言处理、计算机视觉等子领域。当前 AI 的核心是让机器从数据中学习模式和规律，而不是手工编写所有规则。",
+        "人工智能是一门让机器具备感知、推理、学习和决策能力的学科。它的层级关系是：AI > 机器学习 > 神经网络 > 深度学习。目前最热门的方向是大语言模型（如 GPT、DeepSeek）和多模态 AI。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*机器学习.*|.*machine learning.*|.*ML.*",
+      "responses": [
+        "机器学习（ML）是 AI 的核心子集，让计算机从数据中自动学习而无需显式编程。三大范式：监督学习（有标签数据）、无监督学习（无标签数据）和强化学习（通过奖励信号学习）。经典算法包括线性回归、决策树、SVM、K-Means 等。",
+        "机器学习就是让算法在数据上训练，找到输入到输出的映射关系。比如给你一堆带标签的猫狗图片训练，模型就能学会区分猫和狗。关键概念：训练集/测试集、过拟合、正则化、交叉验证。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*深度学习.*|.*deep learning.*|.*DL.*",
+      "responses": [
+        "深度学习是使用多层神经网络的机器学习方法。它通过层次化的特征提取自动学习数据的高层抽象表示。核心架构包括：CNN（图像处理）、RNN/LSTM（序列处理）、Transformer（当前主流，支撑 GPT 等大模型）、GAN（生成模型）。",
+        "深度学习的关键优势是端到端学习——不需要手工设计特征，网络自动从原始数据中学习。需要大量数据和 GPU 算力。代表框架：PyTorch、TensorFlow、JAX。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*神经网络.*|.*neural network.*|.*NN.*",
+      "responses": [
+        "神经网络受生物神经元启发，由多层人工神经元组成。每个神经元接收输入，加权求和后通过激活函数（ReLU、Sigmoid 等）输出。多层堆叠形成深度网络。关键组件：前向传播、反向传播、梯度下降、损失函数。",
+        "最简单的神经网络是感知机（单层），多层堆叠就是 MLP（多层感知机）。训练过程本质是：前向计算预测值 -> 计算损失 -> 反向传播梯度 -> 更新权重。重复直到收敛。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*卷积.*|.*CNN.*|.*convolution.*",
+      "responses": [
+        "卷积神经网络（CNN）是处理图像和空间数据的深度学习架构。核心操作：卷积层（提取局部特征）、池化层（降采样）、全连接层（分类）。CNN 通过共享权重实现了平移不变性，在图像分类（ResNet）、目标检测（YOLO）、图像分割（U-Net）等领域取得革命性突破。",
+        "CNN 的核心思想是用小滤波器（如 3x3）在输入上滑动做卷积运算，逐层提取从边缘到纹理到物体的层次特征。经典架构演进：LeNet -> AlexNet -> VGG -> GoogLeNet -> ResNet -> EfficientNet。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*RNN.*|.*循环.*|.*LSTM.*|.*GRU.*|.*序列.*",
+      "responses": [
+        "循环神经网络（RNN）专为序列数据设计，具有循环连接可以「记住」历史信息。但标准 RNN 有梯度消失问题。改进版：LSTM（长短期记忆网络）引入门控机制（遗忘门、输入门、输出门），GRU 是简化版。应用：机器翻译、语音识别、时间序列预测。",
+        "RNN 的局限是串行计算慢、长距离依赖差。Transformer 的出现很大程度上取代了 RNN，但 LSTM/GRU 在资源受限场景仍有价值。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*Transformer.*|.*transformer.*|.*注意力.*|.*attention.*|.*自注意力.*",
+      "responses": [
+        "Transformer 是 2017 年提出的革命性架构，核心是自注意力（Self-Attention）机制。它抛弃了 RNN 的串行计算，实现完全并行化，同时通过位置编码保留序列信息。关键组件：多头注意力、前馈网络、残差连接、层归一化。Transformer 是 GPT、BERT、DeepSeek 等所有现代大语言模型的基础。",
+        "自注意力的核心公式：Attention(Q,K,V) = softmax(QK^T/√d_k)V。它让每个 token 都能直接关注序列中所有其他 token，解决了长距离依赖问题。Transformer 已经从 NLP 扩展到 CV（ViT）、语音、多模态等领域。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*GAN.*|.*生成对抗.*|.*生成.*对抗.*",
+      "responses": [
+        "生成对抗网络（GAN）由生成器和判别器组成，两者通过对抗训练共同进化。生成器学习生成逼真数据来「欺骗」判别器，判别器学习区分真假。经典变体：DCGAN、StyleGAN（高分辨率人脸生成）、CycleGAN（风格迁移）、Pix2Pix（图像翻译）。",
+        "GAN 的训练难点在于平衡——如果判别器太强，生成器学不到东西；生成器太强，判别器失效。技术上需要精心设计网络结构、损失函数和训练技巧。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*强化学习.*|.*reinforcement.*|.*RL.*|.*Q.learning.*",
+      "responses": [
+        "强化学习（RL）是智能体通过与环境交互学习最优策略的机器学习范式。核心元素：状态（State）、动作（Action）、奖励（Reward）、策略（Policy）。经典算法：Q-Learning、DQN、Policy Gradient、PPO、A3C。知名应用：AlphaGo、自动驾驶、游戏 AI。",
+        "强化学习的核心是马尔可夫决策过程（MDP）：智能体在状态 s 下选择动作 a，环境返回新状态 s' 和奖励 r，目标是最大化累积奖励。探索（exploration）与利用（exploitation）的平衡是 RL 的核心挑战。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*NLP.*|.*自然语言.*|.*文本处理.*|.*分词.*",
+      "responses": [
+        "自然语言处理（NLP）是让计算机理解、生成人类语言的 AI 领域。核心任务：分词、词性标注、命名实体识别、情感分析、机器翻译、文本摘要、问答系统。技术演进：规则方法 -> 统计方法（n-gram、HMM）-> 神经网络（RNN）-> 预训练模型（BERT）-> 大语言模型（GPT）。",
+        "中文 NLP 的特殊挑战：需要分词（不像英文有空格分隔）、一词多义、文言文等。常用工具：jieba 分词、HanLP、LAC。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*计算机视觉.*|.*CV.*|.*图像识别.*|.*目标检测.*",
+      "responses": [
+        "计算机视觉（CV）是让机器「看懂」图像和视频的 AI 领域。核心任务：图像分类（这是什么）、目标检测（在哪有什么）、语义分割（每个像素属于什么）、实例分割、姿态估计。CNN 长期主导，现在 Vision Transformer 也在崛起。",
+        "CV 的关键技术演进：SIFT 特征（传统）-> CNN（2012 AlexNet 里程碑）-> Faster R-CNN/YOLO（实时检测）-> ViT/DINO（自监督学习）-> SAM（通用分割大模型）。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*马尔科夫.*|.*markov.*|.*n-gram.*|.*ngram.*",
+      "responses": [
+        "马尔科夫链是一种描述状态转移的随机过程模型，核心假设是「未来只依赖当前状态」（马尔可夫性质）。在 NLP 中，n-gram 模型是马尔科夫链的应用：用前 n-1 个词预测下一个词的概率。虽然简单，但它是统计语言模型的基石。",
+        "马尔科夫链的应用非常广泛：文本生成（手机输入法联想）、PageRank（Google 搜索）、语音识别（HMM）、强化学习（MDP）、基因序列分析。n-gram 的局限是数据稀疏和长距离依赖——这正是神经网络要解决的问题。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*监督学习.*|.*有监督.*|.*分类.*|.*回归.*",
+      "responses": [
+        "监督学习使用带标签的数据训练模型，是最常见的机器学习范式。分为分类（输出离散类别，如猫/狗）和回归（输出连续值，如房价预测）。经典算法：逻辑回归、决策树、随机森林、SVM、KNN、神经网络。关键问题：过拟合、欠拟合、类别不平衡。",
+        "监督学习的核心是找到 f: X -> Y 的映射。评估指标：分类用准确率/精确率/召回率/F1，回归用 MSE/MAE/R²。训练流程：数据准备 -> 特征工程 -> 模型选择 -> 训练 -> 评估 -> 调优。"
+      ],
+      "confidence": 0.80
+    },
+    {
+      "pattern": ".*无监督学习.*|.*聚类.*|.*降维.*|.*K.?means.*",
+      "responses": [
+        "无监督学习处理没有标签的数据，目标是发现数据的内在结构和模式。主要任务：聚类（K-Means、DBSCAN、层次聚类）、降维（PCA、t-SNE、UMAP）、异常检测、关联规则。自监督学习（如 BERT 的掩码预测）也是无监督的一种特殊形式。",
+        "无监督学习更接近人类学习方式——我们从大量无标签的经验中学习世界规律。在工业界，无监督预训练 + 有监督微调（如 BERT -> 分类任务）是非常成功的范式。"
+      ],
+      "confidence": 0.80
+    },
+    {
+      "pattern": ".*过拟合.*|.*欠拟合.*|.*正则化.*|.*dropout.*",
+      "responses": [
+        "过拟合是模型在训练集表现好但在测试集表现差——模型「记住」了训练数据的噪声而非学习真正的模式。解决方法：增加数据、正则化（L1/L2）、Dropout、早停（Early Stopping）、数据增强、简化模型。欠拟合则相反，模型太简单学不到有效模式。",
+        "判断过拟合的方法：训练损失持续下降但验证损失上升。经验法则：模型参数量应与数据量匹配，参数量远大于样本数时极易过拟合。正则化的本质是给损失函数加惩罚项，约束参数不要太大。"
+      ],
+      "confidence": 0.80
+    },
+    {
+      "pattern": ".*梯度下降.*|.*SGD.*|.*优化器.*|.*Adam.*|.*学习率.*",
+      "responses": [
+        "梯度下降是神经网络的核心优化算法：沿损失函数梯度的反方向更新参数。变体：批量梯度下降（BGD，全量数据）、随机梯度下降（SGD，单个样本）、小批量梯度下降（Mini-batch SGD，折中）。动量法加速收敛，Adam 自适应学习率是目前最常用的优化器。",
+        "学习率是深度学习最重要的超参数之一。太大：震荡不收敛；太小：收敛太慢。学习率调度策略：阶梯衰减、余弦退火、Warmup。Adam 结合了动量和自适应学习率的优点。"
+      ],
+      "confidence": 0.80
+    },
+    {
+      "pattern": ".*激活函数.*|.*ReLU.*|.*sigmoid.*|.*softmax.*",
+      "responses": [
+        "激活函数为神经网络引入非线性，没有它多层网络等价于单层。常用：Sigmoid（输出 0~1，有梯度消失问题）、Tanh（-1~1，零中心）、ReLU（max(0,x)，简单高效，主流选择）、LeakyReLU（解决 ReLU 死神经元）、Softmax（多分类输出层，概率和为 1）。",
+        "ReLU 是深度学习中最常用的激活函数，优点：计算简单、缓解梯度消失、稀疏激活。缺点：负半轴梯度为 0 导致神经元「死亡」。变体：LeakyReLU、PReLU、ELU、GELU（Transformer 常用）。"
+      ],
+      "confidence": 0.80
+    },
+    {
+      "pattern": ".*损失函数.*|.*loss.*|.*交叉熵.*|.*MSE.*",
+      "responses": [
+        "损失函数衡量模型预测与真实值的差距，指导训练方向。分类任务：交叉熵损失（Cross-Entropy），回归任务：均方误差（MSE）、平均绝对误差（MAE）。特殊损失：对比损失（Contrastive Loss）、三元组损失（Triplet Loss）、Focal Loss（解决类别不平衡）。",
+        "交叉熵是分类任务最常用的损失函数：L = -Σ y_true * log(y_pred)。它与 softmax 组合时梯度形式简洁：dy = y_pred - y_true。MSE 对异常值敏感（平方放大误差），MAE 更鲁棒。"
+      ],
+      "confidence": 0.80
+    },
+    {
+      "pattern": ".*大语言模型.*|.*LLM.*|.*GPT.*|.*ChatGPT.*|.*DeepSeek.*|.*大模型.*",
+      "responses": [
+        "大语言模型（LLM）是基于 Transformer 的大规模预训练语言模型。代表：GPT 系列（OpenAI）、Claude（Anthropic）、Gemini（Google）、DeepSeek（中国）、文心一言、通义千问。核心技术：预训练（海量文本学习语言知识）、指令微调（遵循人类指令）、RLHF（人类反馈强化学习对齐）。",
+        "LLM 的能力涌现：随着参数量增大（从百万到千亿级），模型出现了小模型没有的能力——推理、编程、翻译、创作。关键训练技术：自回归语言建模（预测下一个词）、MoE（混合专家）架构、长上下文扩展。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*prompt.*|.*提示.*|.*提示工程.*|.*prompt engineering.*",
+      "responses": [
+        "提示工程（Prompt Engineering）是设计有效输入以引导 LLM 生成期望输出的技术。核心技巧：角色设定（你是一个专家）、Few-shot（给几个例子）、思维链（Chain-of-Thought，一步步推理）、结构化输出（要求 JSON 格式）。好的 prompt 要让模型清楚知道：做什么、怎么做、输出什么格式。",
+        "高级 prompt 技巧：ReAct（推理+行动交替）、Self-Consistency（多次采样取多数）、Tree of Thoughts（多路径探索）。但最重要的还是把话说清楚——明确、具体、有例子。"
+      ],
+      "confidence": 0.80
+    },
+    {
+      "pattern": ".*token.*|.*分词.*|.*tokenization.*|.*BPE.*",
+      "responses": [
+        "Tokenization 是将文本分割为模型处理的基本单元（token）的过程。方法：按词分割（英文简单、中文需要分词）、按字符分割（无 OOV 问题但序列长）、子词分割（BPE/WordPiece/SentencePiece，折中方案）。现代 LLM 普遍使用 BPE（字节对编码）或其变体。",
+        "好的 tokenization 能平衡：词汇表大小、OOV 处理、语义保留。BPE 的核心思想是迭代合并最频繁的字符对，从字符级逐步构建子词词汇表。中文 tokenization 的一个 token 大约对应 1-2 个汉字。"
+      ],
+      "confidence": 0.80
+    },
+    {
+      "pattern": ".*RAG.*|.*检索增强.*|.*向量数据库.*|.*embedding.*|.*嵌入.*",
+      "responses": [
+        "RAG（检索增强生成）结合信息检索和文本生成：先从知识库检索相关文档，再将文档作为上下文输入 LLM 生成回答。优点：减少幻觉、可溯源、知识可更新无需重新训练。关键组件：Embedding 模型（文本转向量）、向量数据库（ChromaDB/FAISS/Milvus）、检索策略。",
+        "Embedding 是将文本映射到高维向量空间的技术。语义相近的文本向量距离近。常用模型：OpenAI text-embedding、BGE、M3E。向量数据库支持近似最近邻（ANN）搜索，实现毫秒级语义检索。"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern": ".*Python.*AI|.*Python.*机器学习|.*用Python.*",
+      "responses": [
+        "Python 是 AI/ML 领域的首选语言，生态系统极其丰富：数据处理（NumPy、Pandas）、机器学习（scikit-learn）、深度学习（PyTorch、TensorFlow、JAX）、NLP（transformers、spaCy、jieba）、CV（OpenCV、Pillow）、可视化（matplotlib、seaborn）。Python 的简洁语法和胶水语言特性使其成为 AI 研究和工程的不二之选。",
+        "入门 AI 的 Python 学习路线：Python 基础 -> NumPy -> Pandas -> scikit-learn（传统 ML）-> PyTorch（深度学习）-> HuggingFace transformers（NLP）。关键是动手做项目，不要只看不写。"
+      ],
+      "confidence": 0.80
+    },
+
+    {
+      "pattern": ".*天气.*",
+      "responses": [
+        "我暂时还不联网看天气，不过如果你想聊聊气象预测中的 AI 应用（比如用 LSTM 做天气预报），我可以给你讲讲！",
+        "天气数据是典型的时间序列问题，AI 在天气预报中应用广泛。换个话题，想了解 LSTM 或时序预测吗？"
+      ],
+      "confidence": 0.50
+    },
+    {
+      "pattern": ".*",
+      "responses": [
+        "这个话题很有意思！想深入了解一下 AI 相关的什么内容呢？",
+        "嗯，我不太确定。不过我可以跟你聊聊人工智能、机器学习、深度学习等话题~",
+        "换个角度想想？或者问问我关于 AI 的问题？"
+      ],
+      "confidence": 0.01
+    }
+  ],
+
+  "matchers": {
+    "regex": {
+      "enabled": true,
+      "priority": 10
+    },
+    "fuzzy": {
+      "enabled": true,
+      "priority": 20,
+      "threshold": 0.25,
+      "min_confidence": 0.2,
+      "use_tfidf": true
+    },
+    "markov": {
+      "enabled": true,
+      "priority": 30,
+      "n_gram": 3,
+      "temperature": 0.8,
+      "max_length": 80
+    }
+  },
+
+  "responders": {
+    "time": {
+      "enabled": true,
+      "time_templates": [
+        "现在是 {time}。",
+        "当前时间：{time}。"
+      ],
+      "date_templates": [
+        "今天是 {date}。",
+        "今天 {year}年{month}月{day}日。"
+      ]
+    },
+    "math": {
+      "enabled": true,
+      "templates": [
+        "计算结果是：{result}。",
+        "{expression} = {result}。"
+      ]
+    }
+  },
+
+  "pipeline": {
+    "response_selection": "random"
+  },
+
+  "reflections": {
+    "我": "你",
+    "你": "我",
+    "我的": "你的",
+    "你的": "我的",
+    "我是": "你是",
+    "你是": "我是"
+  },
+
+  "empty_input_response": "请说点什么吧，我可以跟你聊 AI 相关的话题~",
+  "fallback_response": "这个话题我不太确定，不过我懂人工智能、机器学习、深度学习等很多 AI 知识，换个话题试试？"
+}

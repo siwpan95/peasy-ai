@@ -1,0 +1,44 @@
+{
+  "save_name": "mirror_house_alley",
+  "timestamp": "20260606_225229",
+  "character_id": "investigator_liming",
+  "character_name": "黎明 · 调查记者",
+  "character_state": {
+    "character_id": "investigator_liming",
+    "name": "黎明 · 调查记者",
+    "version": 1,
+    "hp": 7,
+    "hp_max": 10,
+    "fp": 9,
+    "fp_max": 9,
+    "will": 12,
+    "per": 12,
+    "focus_points": 3,
+    "focus_max": 3,
+    "luck_points": 2,
+    "luck_max": 2,
+    "psychic_marks": 0,
+    "temporary_tags": [
+      {
+        "name": "movement",
+        "modifier": -2,
+        "duration": "scene"
+      }
+    ],
+    "has_obsession": false,
+    "obsession_name": "",
+    "permanent_tags": []
+  },
+  "game_progress": {
+    "total_nodes": 6,
+    "completed_nodes": 1,
+    "current_act": "act_1",
+    "flags": {},
+    "completed_nodes_list": [
+      "1.1_sound_source"
+    ],
+    "choices_log": [
+      "节点 1.1_sound_source: success=False"
+    ]
+  }
+}

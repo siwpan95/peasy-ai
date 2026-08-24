@@ -1,0 +1,23 @@
+{
+  "id": "prologue",
+  "speaker": "computer",
+  "text": "警报：曲速引擎故障。紧急唤醒命令已执行。船长，请立即做出决策。",
+  "options": [
+    {
+      "text": "紧急停船，检修引擎",
+      "effects": {"hull": 5, "energy": -10, "crew": -5},
+      "next": "engineer_meeting"
+    },
+    {
+      "text": "全速前进，强行脱离",
+      "effects": {"hull": -15, "energy": 10, "oxygen": -10},
+      "condition": {"attr": "energy", "min": 20},
+      "next": "near_miss"
+    },
+    {
+      "text": "发送求救信号",
+      "effects": {"energy": -5},
+      "next": "distress_signal"
+    }
+  ]
+}

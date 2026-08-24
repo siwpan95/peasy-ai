@@ -1,0 +1,31 @@
+{
+  "character_id": "occultist_wenya",
+  "name": "文雅 · 神秘学学者",
+  "version": 1,
+  "attributes": { "ST": 8, "DX": 9, "IQ": 14, "HT": 10 },
+  "secondary": { "HP": 8, "FP": 10, "Will": 13, "Per": 13 },
+  "skills": [
+    { "name": "神秘学", "level": 16, "difficulty": "Hard", "base_attribute": "IQ", "points_spent": 8 },
+    { "name": "历史研究", "level": 15, "difficulty": "Avg", "base_attribute": "IQ", "points_spent": 4 },
+    { "name": "语言学", "level": 14, "difficulty": "Avg", "base_attribute": "IQ", "points_spent": 2 },
+    { "name": "符号解读", "level": 14, "difficulty": "Hard", "base_attribute": "IQ", "points_spent": 4 },
+    { "name": "急救", "level": 12, "difficulty": "Easy", "base_attribute": "IQ", "points_spent": 1 },
+    { "name": "潜行", "level": 9, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 0 }
+  ],
+  "advantages": ["过目不忘", "语言学天赋"],
+  "disadvantages": ["体弱", "被诅咒的家庭背景"],
+  "features": [
+    { "name": "直觉预感", "trigger_condition": "接触超自然物品或进入受污染区域", "cost": 1, "effect": "感知物品或区域的本质或危险来源", "per_scene_limit": 2 },
+    { "name": "符号之力", "trigger_condition": "面对被符文/魔法保护的障碍时", "cost": 1, "effect": "绕过或削弱魔法防护（-4 对手抵抗）", "per_scene_limit": 1 },
+    { "name": "禁忌知识", "trigger_condition": "遇到不明超自然现象时", "cost": 1, "effect": "掷神秘学即时辨识，成功则了解其性质", "per_scene_limit": 1 }
+  ],
+  "anchors": ["祖母的护身符", "那本不应该存在的书"],
+  "equipment": [
+    { "name": "旧书", "type": "key_item", "slot": "backpack", "dr": 0, "effects": [], "uses": -1, "description": "一本泛黄的炼金术手抄本" },
+    { "name": "防身喷雾", "type": "weapon", "slot": "hand", "damage": "special", "dr": 0, "effects": [{"tag_mod": "敌人:-2 视觉感知", "duration": "3 rounds"}], "uses": 3, "description": "辣椒水喷雾，防身用" }
+  ],
+  "focus_max": 4,
+  "luck_max": 2,
+  "xp_log": [],
+  "total_xp": 0
+}

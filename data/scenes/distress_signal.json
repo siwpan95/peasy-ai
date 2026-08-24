@@ -1,0 +1,23 @@
+{
+  "id": "distress_signal",
+  "speaker": "computer",
+  "text": "求救信号已发出。三小时后接收到回复——但回复源是一个未知文明的语言。是否尝试解码沟通？",
+  "options": [
+    {
+      "text": "解码沟通（消耗大量能源）",
+      "effects": {"energy": -30, "crew": 5},
+      "flag": "contacted_aliens",
+      "next": "alien_contact"
+    },
+    {
+      "text": "忽略信号，继续原航线",
+      "effects": {"energy": 5},
+      "next": "calm_waters"
+    },
+    {
+      "text": "全速远离信号源",
+      "effects": {"energy": -15, "hull": -5},
+      "next": "deep_space"
+    }
+  ]
+}

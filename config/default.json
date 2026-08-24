@@ -1,0 +1,127 @@
+{
+  "schema_version": "1.0",
+  "name": "easy-ai",
+  "version": "2.1",
+
+  "safety": {
+    "enabled": false,
+    "keywords": [],
+    "response": [
+      "抱歉，我无法回答这个问题。",
+      "这个话题我不太了解，换个话题吧？"
+    ]
+  },
+
+  "rules": [
+    {
+      "pattern": "你好|嗨|hello|hi|哈喽",
+      "responses": [
+        "你好呀！有什么可以帮你的？",
+        "嗨！很高兴见到你。",
+        "Hello! 今天想聊什么？"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "pattern": "你叫什么|你是谁|你的名字",
+      "responses": [
+        "我叫 easy-ai，一个用 Python 写的通用 AI 助手。",
+        "我是 easy-ai，你的对话伙伴。"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "pattern": "谢谢|多谢|感谢|Thanks",
+      "responses": [
+        "不客气！能帮到你就好。",
+        "不用谢，这是我应该做的。",
+        "随时为你效劳~"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "pattern": "再见|拜拜|bye|see you",
+      "responses": [
+        "再见！期待下次聊天。",
+        "拜拜，祝你有美好的一天！",
+        "Bye~ 下次见！"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "pattern": ".*天气.*",
+      "responses": [
+        "我暂时还不会看天气，不过你可以告诉我你现在在哪里~",
+        "天气总是变化无常，不如聊聊你的心情？"
+      ],
+      "confidence": 0.5
+    },
+    {
+      "pattern": ".*",
+      "responses": [
+        "这个话题很有意思，能再详细说说吗？",
+        "嗯，我在听，请继续说。",
+        "我不太确定该怎么回应，但你可以教我新的回答。",
+        "关于这个，你怎么看？"
+      ],
+      "confidence": 0.01
+    }
+  ],
+
+  "matchers": {
+    "regex": {
+      "enabled": true,
+      "priority": 10
+    },
+    "fuzzy": {
+      "enabled": true,
+      "priority": 20,
+      "threshold": 0.25,
+      "min_confidence": 0.2,
+      "use_tfidf": true
+    }
+  },
+
+  "responders": {
+    "time": {
+      "enabled": true,
+      "time_templates": [
+        "现在是 {time}。",
+        "当前时间：{time}。",
+        "已经 {time} 啦！"
+      ],
+      "date_templates": [
+        "今天是 {date}。",
+        "今天 {year}年{month}月{day}日。"
+      ],
+      "weekday_templates": [
+        "今天是星期{weekday}。",
+        "今天周{weekday}。"
+      ]
+    },
+    "math": {
+      "enabled": true,
+      "templates": [
+        "计算结果是：{result}。",
+        "{expression} = {result}。",
+        "答案是 {result}。"
+      ]
+    }
+  },
+
+  "pipeline": {
+    "response_selection": "random"
+  },
+
+  "reflections": {
+    "我": "你",
+    "你": "我",
+    "我的": "你的",
+    "你的": "我的",
+    "我是": "你是",
+    "你是": "我是"
+  },
+
+  "empty_input_response": "请说点什么吧。",
+  "fallback_response": "我不太明白你的意思，你能换个方式说吗？"
+}

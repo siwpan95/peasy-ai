@@ -1,0 +1,18 @@
+{
+  "id": "final_jump",
+  "speaker": "captain",
+  "text": "星门就在眼前。这是最后一步——一旦穿过，我们就回到了人类文明的疆域。但星门周围有不明的能量波动，可能是陷阱，也可能是回家的唯一通道。",
+  "options": [
+    {
+      "text": "毫不犹豫，穿越星门",
+      "effects": {},
+      "next": "end_home"
+    },
+    {
+      "text": "减速侦察后再决定",
+      "effects": {"energy": -20, "hull": -5},
+      "condition": {"attr": "energy", "min": 25},
+      "next": "end_home"
+    }
+  ]
+}

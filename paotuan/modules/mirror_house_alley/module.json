@@ -1,0 +1,225 @@
+{
+  "meta": {
+    "module_id": "mirror_house_alley",
+    "system_name": "Mirror of the Lost",
+    "module_title": "镜屋巷",
+    "version": "2.0",
+    "author": "TRPG Architect",
+    "compatible_core": "GURPS 4e",
+    "playstyle": "都市恐怖 / 生存谜团",
+    "estimated_duration": "3-4 小时",
+    "player_count": "3-5 人",
+    "synopsis": "暴雨夜躲避仓库，墙后隐藏着神秘铜镜。三层架构 TRPG 入门模组——调查、战斗、精神印记、三结局。",
+    "base_xp": 3
+  },
+  "global_context_tags": [
+    { "id": "rain_slick", "name": "暴雨湿滑", "effect": "闪避 -1，攀爬 -2" },
+    { "id": "low_light", "name": "低能见度", "effect": "视觉感知 -3，近距离以外远程攻击 -2" },
+    { "id": "echo_warehouse", "name": "仓库回声", "effect": "听觉 vs 潜行 +2（但被暴雨减弱）" }
+  ],
+  "act_1": {
+    "scene_id": "act1_discovery",
+    "title": "暴雨中的仓库",
+    "description": "躲避暴风雨时，听到实心砖墙后传来滴水声。",
+    "environment": {
+      "mood": "暴雨敲打铁皮屋顶，雨水从破损的窗户灌入。仓库堆满发霉的木箱。",
+      "tags": [
+        { "id": "rain_slick", "name": "暴雨湿滑", "effect": "闪避 -1，攀爬 -2" },
+        { "id": "low_light", "name": "低能见度", "effect": "视觉感知 -3" }
+      ]
+    },
+    "nodes": [
+      {
+        "node_id": "1.1_sound_source",
+        "scene_type": "perception",
+        "trigger": "玩家调查滴水声的来源。",
+        "prerequisite_nodes": [],
+        "next_nodes": ["1.2_false_wall"],
+        "layer_physics": {
+          "skill_check": "感知（听觉）",
+          "modifier": -2,
+          "target_value_source": "PC.感知 - 2",
+          "critical_effects": { "crit_success": "察觉墙后有金属共振声。" }
+        },
+        "layer_narrative": {
+          "anchor_phrases": {
+            "success": "水没有渗进砖缝，而是在敲击一个中空的空腔。声音不对劲。",
+            "crit_success": "你轻敲砖块。一道细如针尖的金属嗡鸣声回传过来。里面有铜器。",
+            "failure": "你听了半天，只听到暴雨砸在屋顶的声响。什么也没发现。"
+          }
+        },
+        "layer_pacing": { "initiative": "抽牌。点数最低者先描述调查。" }
+      },
+      {
+        "node_id": "1.2_false_wall",
+        "scene_type": "feat",
+        "trigger": "破开假墙进入隐藏壁龛。",
+        "prerequisite_nodes": ["1.1_sound_source"],
+        "next_nodes": ["2.1_the_body_and_mirror"],
+        "layer_physics": {
+          "skill_check": "力量",
+          "modifier": -2,
+          "tool_bonus": "+2（锤子/撬棍）",
+          "success_effect": "成功破墙，发现隐藏壁龛。"
+        },
+        "layer_narrative": {
+          "anchor_phrases": {
+            "success": "砖块向内坍塌，释放出一股甜腻、令人窒息的铜锈与腐臭气味。",
+            "crit_success": "你像拉开抽屉一样轻松地取出松动的砖头。里面漆黑一片，但有什么东西醒着。",
+            "failure": "砖墙纹丝不动。你的手指磨出了血痕，但那堵墙仿佛在嘲笑你。"
+          }
+        }
+      }
+    ]
+  },
+  "act_2": {
+    "scene_id": "act2_the_alcove",
+    "title": "隐藏的壁龛",
+    "description": "一具尸体紧握铜镜。空气中有水银气味。地下楼梯通向未知。",
+    "environment_update": {
+      "remove_tags": ["rain_slick"],
+      "add_tags": [
+        { "id": "corrosive_fumes", "name": "腐蚀性烟气", "effect": "HT 每 30 秒检定，失败 -1 FP" },
+        { "id": "darkness_stairs", "name": "黑暗", "effect": "无光源时视觉 -9" }
+      ]
+    },
+    "nodes": [
+      {
+        "node_id": "2.1_the_body_and_mirror",
+        "scene_type": "investigation",
+        "trigger": "调查尸体与铜镜。",
+        "prerequisite_nodes": ["1.2_false_wall"],
+        "next_nodes": ["2.2_rat_swarm"],
+        "layer_physics": {
+          "skill_checks": [
+            { "skill": "急救 / 诊断", "result": "死因：无阻塞性窒息。自我诱导的呼吸停止。" },
+            { "skill": "神秘学", "result": "镜背刻有 17 世纪炼金符号，代表水银与倒转。" }
+          ]
+        },
+        "psychic_marks": {
+          "trigger_level": "接触",
+          "check": "感知 vs 诡异度(10)",
+          "failure_cost": 1,
+          "effect_description": "你感到铜镜在注视你的呼吸。你吸气时，倒影在呼气。"
+        },
+        "layer_narrative": {
+          "anchor_phrases": {
+            "success": "你稳住心神，与镜面对视。倒影虽然微微扭曲，但仍在你的掌控之中。",
+            "failure": "你正与自己搏斗——你吸气、它呼气。手指不由自主地扣紧冰冷的镜缘。"
+          }
+        }
+      },
+      {
+        "node_id": "2.2_rat_swarm",
+        "scene_type": "combat",
+        "trigger": "走下楼梯 / 惊扰鼠巢。",
+        "prerequisite_nodes": ["2.1_the_body_and_mirror"],
+        "next_nodes": ["3.1_the_reflection"],
+        "layer_physics": {
+          "enemy_type": "杂兵单位（巨鼠群）",
+          "unit_stats": {
+            "name": "巨鼠群",
+            "attack_skill": 12,
+            "damage": "1d-4 cut",
+            "dodge": 9,
+            "hp": 10,
+            "dr": 0
+          },
+          "minion_threshold": { ">=6": "立即移除", "2-5": "丧失行动力/溃逃", "<2": "轻微干扰" }
+        },
+        "layer_pacing": { "initiative": "鼠群作为单个单位，占一张牌。" },
+        "layer_narrative": {
+          "anchor_phrases": {
+            "success": "剑刃划开皮毛，像撕一张浸水的纸。鼠群尖叫散开。",
+            "failure": "群鼠扑倒了你——尖牙和利爪从四面八方涌来。"
+          }
+        }
+      }
+    ]
+  },
+  "act_3": {
+    "scene_id": "act3_chapel",
+    "title": "水银礼拜堂",
+    "description": "圆形石室，中央立着全身水银镜。倒影反向行动。",
+    "environment": {
+      "mood": "圆形石室，墙壁布满手臂、脚掌的反向印痕，像有人从墙里向外挣扎。",
+      "tags": [
+        { "id": "mirror_aura", "name": "镜之气息", "effect": "所有感知检定 -2，精神对抗 -1" }
+      ]
+    },
+    "nodes": [
+      {
+        "node_id": "3.1_the_reflection",
+        "scene_type": "combat",
+        "trigger": "靠近镜子 3 米内。镜影从镜面踏出。",
+        "prerequisite_nodes": ["2.2_rat_swarm"],
+        "next_nodes": ["3.2_closure"],
+        "layer_physics": {
+          "enemy_type": "精英（镜中倒影/Wildcard）",
+          "unit_stats": {
+            "name": "镜中倒影",
+            "attack_skill": 14,
+            "damage": "2d6 cut",
+            "dodge": 10,
+            "hp": 12,
+            "dr": 2
+          },
+          "special_mechanic": {
+            "inversion": "攻击被镜像反转，防御被倒置。",
+            "counter_play": "IQ 或战术检定 → '逆转攻击'。成功后对手防御 -4，伤害 x1.5。",
+            "reflection_damage": "直接攻击镜子 → 自身受同等伤害。"
+          }
+        },
+        "psychic_marks": {
+          "trigger_level": "对峙",
+          "check": "意志 vs 镜之意志(14)",
+          "failure_cost": "1-2 印记 + 1d3 HT 损伤"
+        },
+        "layer_narrative": {
+          "anchor_phrases": {
+            "success": "你看穿了倒影的把戏。它的动作在你眼中清晰可辨——左侧即右侧。",
+            "failure": "你向左虚晃，刀刃却从右侧死角狠狠刺来。倒影的惊恐与你的狞笑如出一辙。",
+            "crit_success": "你闭上双眼凭直觉反手一击。剑刃贯穿镜面，倒影发出不属于这世界的尖啸。"
+          }
+        }
+      },
+      {
+        "node_id": "3.2_closure",
+        "scene_type": "feat",
+        "trigger": "摧毁或封印镜子。",
+        "prerequisite_nodes": ["3.1_the_reflection"],
+        "next_nodes": [],
+        "layer_physics": {
+          "skill_check": "选择：1.力量-2（暴力摧毁） 2.智力-2（仪式封印）",
+          "modifier": -2,
+          "resolution_paths": [
+            { "path": "暴力摧毁", "method": "背对镜子/反向动作。ST-2。", "success": "镜子粉碎。" },
+            { "path": "仪式封印", "method": "反向书法/反向咒语。IQ-2。", "success": "镜子凝固为普通玻璃。" }
+          ]
+        },
+        "psychic_marks": {
+          "trigger_level": "崩溃",
+          "check": "若暴力摧毁未解反向：意志 -2",
+          "failure_cost": "+2 印记，可能永久执念"
+        },
+        "layer_narrative": {
+          "anchor_phrases": {
+            "success": "镜面四分五裂！银色的液体流淌一地，然后凝固成灰。一切都结束了。",
+            "failure": "镜子炸裂了——碎片中射出一道银光直击眉心。你失去了意识……",
+            "crit_success": "完美的封印。镜面凝固为纯净的玻璃，映出你真正的倒影——那个从未被扭曲的你。"
+          }
+        }
+      }
+    ]
+  },
+  "gm_cheatsheet": {
+    "quick_ref_table": [
+      { "场景": "1.1 滴水声", "检定": "感知(听觉)-2", "失败": "浪费时间" },
+      { "场景": "1.2 破墙", "检定": "力量-2", "失败": "损坏线索" },
+      { "场景": "2.1 铜镜", "检定": "感知 vs 诡异度(10)", "失败": "1 精神印记" },
+      { "场景": "2.2 鼠群", "检定": "战斗技能", "失败": "伤害" },
+      { "场景": "3.1 镜影", "检定": "IQ/战术 逆转", "失败": "反射伤害" },
+      { "场景": "3.2 终结", "检定": "力量-2/智力-2", "失败": "镜子反噬" }
+    ]
+  }
+}

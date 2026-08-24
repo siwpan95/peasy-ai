@@ -1,0 +1,32 @@
+{
+  "character_id": "street_rat_akun",
+  "name": "阿坤 · 街头混混",
+  "version": 1,
+  "attributes": { "ST": 11, "DX": 13, "IQ": 9, "HT": 11 },
+  "secondary": { "HP": 11, "FP": 11, "Will": 10, "Per": 11 },
+  "skills": [
+    { "name": "潜行", "level": 14, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 4 },
+    { "name": "撬锁", "level": 14, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 4 },
+    { "name": "话术", "level": 11, "difficulty": "Avg", "base_attribute": "IQ", "points_spent": 4 },
+    { "name": "街头智慧", "level": 12, "difficulty": "Avg", "base_attribute": "IQ", "points_spent": 4 },
+    { "name": "投掷", "level": 13, "difficulty": "Easy", "base_attribute": "DX", "points_spent": 1 },
+    { "name": "跑酷", "level": 13, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 2 },
+    { "name": "近战", "level": 12, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 1 }
+  ],
+  "advantages": ["灵活", "街头声望"],
+  "disadvantages": ["有案底", "冲动"],
+  "features": [
+    { "name": "混迹街头", "trigger_condition": "在城市环境中需要信息或捷径", "cost": 1, "effect": "找到知情人或捷径路径", "per_scene_limit": 2 },
+    { "name": "直觉闪避", "trigger_condition": "被射击或投掷攻击时", "cost": 1, "effect": "本次闪避 +3", "per_scene_limit": 1 },
+    { "name": "出其不意", "trigger_condition": "偷袭或从掩体后出击", "cost": 1, "effect": "本次攻击目标防御 -3", "per_scene_limit": 1 }
+  ],
+  "anchors": ["老爸留的打火机", "那条跑过无数次的巷子"],
+  "equipment": [
+    { "name": "小刀", "type": "weapon", "slot": "hand", "damage": "1d6-1 cut", "dr": 0, "effects": [], "uses": -1, "description": "一把折叠小刀" },
+    { "name": "撬锁工具", "type": "tool", "slot": "backpack", "dr": 0, "effects": [{"tool_bonus": 1, "skill": "撬锁"}], "uses": -1, "description": "一套简易撬锁工具" }
+  ],
+  "focus_max": 3,
+  "luck_max": 3,
+  "xp_log": [],
+  "total_xp": 0
+}

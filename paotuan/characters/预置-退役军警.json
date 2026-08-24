@@ -1,0 +1,31 @@
+{
+  "character_id": "veteran_zhangwei",
+  "name": "张威 · 退役军警",
+  "version": 1,
+  "attributes": { "ST": 13, "DX": 11, "IQ": 9, "HT": 11 },
+  "secondary": { "HP": 13, "FP": 11, "Will": 10, "Per": 10 },
+  "skills": [
+    { "name": "近战", "level": 14, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 8 },
+    { "name": "步枪", "level": 13, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 4 },
+    { "name": "战术", "level": 11, "difficulty": "Hard", "base_attribute": "IQ", "points_spent": 8 },
+    { "name": "急救", "level": 11, "difficulty": "Easy", "base_attribute": "IQ", "points_spent": 1 },
+    { "name": "威胁识别", "level": 11, "difficulty": "Avg", "base_attribute": "IQ", "points_spent": 2 },
+    { "name": "潜行", "level": 10, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 1 }
+  ],
+  "advantages": ["战斗反射", "坚韧"],
+  "disadvantages": ["噩梦症", "过度保护"],
+  "features": [
+    { "name": "战术评估", "trigger_condition": "战斗开始时或敌人增援出现", "cost": 1, "effect": "获得敌人弱点情报（-2 对应该弱点）或战斗布局信息", "per_scene_limit": 1 },
+    { "name": "保护同伴", "trigger_condition": "同伴受到攻击时", "cost": 1, "effect": "代为承受一半伤害（向下取整），同伴获得 +2 下次检定", "per_scene_limit": 1 },
+    { "name": "战场直觉", "trigger_condition": "被突袭或进入伏击区域", "cost": 1, "effect": "取消突袭惩罚，正常进行检定", "per_scene_limit": 1 }
+  ],
+  "anchors": ["部队铭牌", "那天的弹孔"],
+  "equipment": [
+    { "name": "战术背心", "type": "armor", "slot": "body", "dr": 3, "dr_location": "躯干", "penalty": {}, "uses": -1, "description": "标准战术背心" },
+    { "name": "军刀", "type": "weapon", "slot": "hand", "damage": "1d6+1 cut", "dr": 0, "effects": [], "uses": -1, "description": "一把用过多年的军刀" }
+  ],
+  "focus_max": 3,
+  "luck_max": 2,
+  "xp_log": [],
+  "total_xp": 0
+}

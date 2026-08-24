@@ -1,0 +1,31 @@
+{
+  "character_id": "investigator_liming",
+  "name": "黎明 · 调查记者",
+  "version": 1,
+  "attributes": { "ST": 10, "DX": 10, "IQ": 13, "HT": 9 },
+  "secondary": { "HP": 10, "FP": 9, "Will": 12, "Per": 12 },
+  "skills": [
+    { "name": "调查", "level": 14, "difficulty": "Avg", "base_attribute": "IQ", "points_spent": 4 },
+    { "name": "潜行", "level": 11, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 2 },
+    { "name": "话术", "level": 13, "difficulty": "Avg", "base_attribute": "IQ", "points_spent": 2 },
+    { "name": "摄影", "level": 12, "difficulty": "Easy", "base_attribute": "IQ", "points_spent": 1 },
+    { "name": "驾驶", "level": 11, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 2 },
+    { "name": "近战", "level": 10, "difficulty": "Avg", "base_attribute": "DX", "points_spent": 1 }
+  ],
+  "advantages": ["警觉", "快速反应"],
+  "disadvantages": ["好奇心（强烈）", "失眠"],
+  "features": [
+    { "name": "记者的鼻子", "trigger_condition": "调查异常现象/线索时有可辨识信息", "cost": 1, "effect": "请求 GM 给出一条额外线索或 -2 对方对抗检定", "per_scene_limit": 2 },
+    { "name": "经验直觉", "trigger_condition": "进入危险区域之前", "cost": 1, "effect": "感知到潜在威胁的大致方向或性质", "per_scene_limit": 1 },
+    { "name": "可靠的同伴", "trigger_condition": "同伴行动失败时", "cost": 1, "effect": "给予同伴 +2 下一次检定", "per_scene_limit": 1 }
+  ],
+  "anchors": ["父亲的怀表", "被烧毁的报社照片"],
+  "equipment": [
+    { "name": "手电筒", "type": "tool", "slot": "hand", "dr": 0, "effects": [{"tag_mod": "remove:低能见度"}], "uses": -1, "description": "老式手电筒" },
+    { "name": "笔记本", "type": "key_item", "slot": "backpack", "dr": 0, "effects": [], "uses": -1, "description": "浸水但还能用的笔记本" }
+  ],
+  "focus_max": 3,
+  "luck_max": 2,
+  "xp_log": [],
+  "total_xp": 0
+}

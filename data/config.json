@@ -1,0 +1,18 @@
+{
+  "title": "星舰迷途",
+  "attributes": ["hull", "energy", "crew", "oxygen"],
+  "attribute_default": 50,
+  "attribute_max": 100,
+  "attribute_min": 0,
+  "start_scene": "prologue",
+  "endings": {
+    "low_hull": "船体破裂，星舰在太空中解体。逃生舱弹出失败，全员阵亡。",
+    "high_hull": "船体过度加固导致质量失衡。星舰被附近黑洞引力捕获，无法逃脱。",
+    "low_energy": "能源耗尽，生命维持系统停机。你在黑暗中漂流，直到永远。",
+    "high_energy": "反应堆过载，核心熔毁。星舰化作一颗短暂的新星。",
+    "low_crew": "船员叛变，将你关进冷冻舱。你将在 500 年后被唤醒。",
+    "high_crew": "船员数量超过补给承载上限。饥荒与疾病席卷全舰。",
+    "low_oxygen": "氧气耗尽，所有生命体征停止。星舰变成一座太空坟墓。",
+    "high_oxygen": "氧气浓度过高引发爆炸。一个火花就足够毁灭一切。"
+  }
+}

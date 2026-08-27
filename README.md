@@ -44,7 +44,7 @@ easy-ai/
 ## 快速开始
 
 ```bash
-cd D:\allin\tools\easy-ai
+cd G:\repos\easy-ai
 
 # 查看所有可用命令
 python main.py --help
@@ -79,7 +79,7 @@ python main.py demo
 ### 1. AICore — 零文件启动
 
 ```python
-import sys; sys.path.insert(0, 'D:/allin/tools/easy-ai')
+import sys; sys.path.insert(0, 'G:/repos/easy-ai')
 from ai.core import AICore
 
 ai = AICore()                              # 零参数，内置默认配置

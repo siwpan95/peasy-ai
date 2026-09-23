@@ -1,5 +1,8 @@
 # easy-ai — 通用 AI 对话框架
 
+> 仓库：<https://gitee.com/siwpan/easy-ai> ｜ 许可：MIT（见 [LICENSE](LICENSE)）
+> 注：文中 <PATH> 为路径占位符，请替换为你本机实际的目录 / 可执行文件路径。
+
 零硬编码、配置驱动、可嵌入任意项目的 AI 核心 + 叙事引擎 + TRPG 训练场。
 
 ## 目录结构
@@ -44,7 +47,7 @@ easy-ai/
 ## 快速开始
 
 ```bash
-cd G:\repos\easy-ai
+cd <PATH>
 
 # 查看所有可用命令
 python main.py --help
@@ -79,7 +82,7 @@ python main.py demo
 ### 1. AICore — 零文件启动
 
 ```python
-import sys; sys.path.insert(0, 'G:/repos/easy-ai')
+import sys; sys.path.insert(0, '<PATH>')
 from ai.core import AICore
 
 ai = AICore()                              # 零参数，内置默认配置

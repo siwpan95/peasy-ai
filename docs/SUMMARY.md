@@ -161,7 +161,7 @@ if engine.can_undo():
 
 **运行测试：**
 ```bash
-cd D:\allin\tools\easy-ai
+cd <easy-ai 仓根>        # 2026-09-28 去本地化：原 D:\allin\tools\easy-ai 已不存在
 python -m pytest tests/
 ```
 
@@ -373,7 +373,7 @@ if engine.can_undo():
 ### 运行测试
 
 ```bash
-cd D:\allin\tools\easy-ai
+cd <easy-ai 仓根>        # 2026-09-28 去本地化：原 D:\allin\tools\easy-ai 已不存在
 python -m pytest tests/ -v
 ```
 

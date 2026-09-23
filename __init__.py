@@ -14,7 +14,10 @@ easy-ai: 通用 AI 对话框架
     config/ — 配置文件
 
 用法：
-    import sys; sys.path.insert(0, 'D:/allin/tools/easy-ai')
+    import os, sys
+    # 2026-09-28 去本地化：按本文件自身位置推导包根（本文件所在目录即包根），
+    # 不再硬编码本机绝对路径（原 D:/allin/tools/easy-ai 已不存在）。
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from ai.core import AICore
     ai = AICore("config/default.json")
 """

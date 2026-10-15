@@ -56,10 +56,18 @@ def run(neg: int = 9, weights: str = "auto", seed: int = 0, conditional: bool = 
     cnn = TextCNN(**{k: v for k, v in CNN_CFG.items()
                      if k not in ("epochs", "unk_cutoff")},
                   unk_cutoff=CNN_CFG["unk_cutoff"])
+    # 训练语料：问答对 + 联网语料（web 为纯文本，无问答结构，条件置空）
+    train_texts = list(a_train)
+    train_conds = list(q_train)
+    web_texts = [t for t in corpus.texts]
+    if web_texts:
+        train_texts += web_texts
+        train_conds += [""] * len(web_texts)
+
     if conditional:
-        cnn.fit(a_train, conditions=q_train, epochs=CNN_CFG["epochs"],
+        cnn.fit(train_texts, conditions=train_conds, epochs=CNN_CFG["epochs"],
                 batch_size=64)
-        source = "条件训练 P(回答|问题)"
+        source = f"条件训练 P(回答|问题)（含联网语料 {len(web_texts)} 段）"
     else:
         wp = ROOT / "data" / "textcnn_weights.json" if weights == "auto" else Path(weights)
         source = "无条件权重（对照）"

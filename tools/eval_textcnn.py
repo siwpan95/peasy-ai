@@ -23,18 +23,25 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from ai.eval import Corpus, evaluate, format_report  # noqa: E402
+from ai.eval import Corpus, evaluate, format_report, tokenize  # noqa: E402
 from ai.matchers.markov_chain import MarkovChain  # noqa: E402
 from ai.textcnn import TextCNN  # noqa: E402
 
 
 def run(ratio=0.8, epochs=20, batch=64, window=4, dim=32, filters=32,
         kernels=(2, 3, 4), lr=0.05, unk_cutoff=1, markov_ns=(3, 4, 5),
-        quiet=False):
+        quiet=False, train_tokens=30000, holdout_tokens=5000):
     corpus = Corpus.from_easy_ai()
     train, hold = corpus.split(ratio)
-    T = train.ai_texts or train.all_texts
+    # ⚠️ 必须用 all_texts 而非 ai_texts：联网语料进的是 `texts`（纯文本，无问答结构），
+    # 若用 ai_texts 就会把 10 万 token 的联网语料整个排除在训练之外，
+    # 「扩语料重评」也就名存实亡（实测踩到）。
+    T = train.all_texts
     H = hold.all_texts
+    # 留出集按 token 抽样：全量 10 万 token 逐 token 评估是 O(n·候选数)，
+    # 会把一次对照拖到 20 分钟以上（实测踩到）。
+    T = _take_tokens(T, train_tokens)
+    H = _take_tokens(H, holdout_tokens)
 
     out = {"corpus": corpus.stats(), "train": len(T), "hold": len(H), "rows": []}
 
@@ -63,6 +70,19 @@ def run(ratio=0.8, epochs=20, batch=64, window=4, dim=32, filters=32,
     if not quiet:
         print(format_report(r, "TextCNN"))
     return out, cnn, corpus, train, hold
+
+
+def _take_tokens(texts: List[str], limit: int) -> List[str]:
+    """按累计 token 数截断文本列表（保留顺序，保证可复现）。"""
+    if limit <= 0:
+        return list(texts)
+    out, n = [], 0
+    for t in texts:
+        if n >= limit:
+            break
+        out.append(t)
+        n += len(tokenize(t))
+    return out
 
 
 def render(out, elapsed) -> str:
@@ -147,13 +167,17 @@ def main():
     ap.add_argument("--dim", type=int, default=32)
     ap.add_argument("--filters", type=int, default=32)
     ap.add_argument("--lr", type=float, default=0.05)
+    ap.add_argument("--train-tokens", type=int, default=30000)
+    ap.add_argument("--holdout-tokens", type=int, default=5000)
     ap.add_argument("--save", action="store_true")
     args = ap.parse_args()
 
     t0 = time.perf_counter()
     out, cnn, _, _, _ = run(epochs=args.epochs, batch=args.batch,
                             window=args.window, dim=args.dim,
-                            filters=args.filters, lr=args.lr)
+                            filters=args.filters, lr=args.lr,
+                            train_tokens=args.train_tokens,
+                            holdout_tokens=args.holdout_tokens)
     report = render(out, time.perf_counter() - t0)
     if args.save:
         p = ROOT / "docs" / "BASELINE_P2.md"

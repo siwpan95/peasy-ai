@@ -190,6 +190,16 @@ class MarkovChain:
             return 0.0
         tok = self._norm(token)
         ctx = [self._norm(c) for c in (context or [])]
+        return self._prob_norm(ctx, tok)
+
+    def _prob_norm(self, ctx: List[str], tok: str) -> float:
+        """概率计算**内核**：ctx 与 tok 必须已归一化（不做重复归一）。
+
+        ⚠️ 为什么要拆出来：`top_k` 需要对 V 个候选各算一次概率，若每次都走
+        `prob()` 就会把同一个 context 重复归一化 V 遍（复杂度 O(n²·V)）——
+        扩语料到 10 万 token 后，留出集 top-1 评估直接卡死 4 分钟以上（实测）。
+        归一化一次、复用 V 次，即可把复杂度降到 O(n² + n·V)。
+        """
         if self.smoothing == "kneser_ney":
             p = self._kn_prob(ctx, tok, self.n)
         elif self.smoothing == "add_k":
@@ -272,7 +282,9 @@ class MarkovChain:
                 cands.update(dist.keys())
                 if len(cands) >= 64:
                     break
-        scored = [(w, self.prob(ctx, w)) for w in cands]
+        # 先归一化候选，再用内核批量算概率（避免每个候选重复归一化 context）
+        normed = [self._norm(w) for w in cands]
+        scored = [(w, self._prob_norm(ctx, nw)) for w, nw in zip(cands, normed)]
         scored.sort(key=lambda x: (-x[1], x[0]))
         return scored[:k]
 

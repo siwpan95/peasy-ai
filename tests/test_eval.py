@@ -166,14 +166,14 @@ class TestRealCorpus(unittest.TestCase):
     """用项目真实语料做冒烟（不写死数字，只校验结构健全）。"""
 
     def test_loads_real_corpus(self):
-        c = Corpus.from_easy_ai()
+        c = Corpus.from_easy_ai(include_web=False)
         self.assertGreater(len(c.pairs), 0, "真实语料应至少有一些问答对")
         st = c.stats()
         self.assertGreater(st["tokens"], 0)
         self.assertIn("training_log", st["sources"])
 
     def test_real_corpus_eval_smoke(self):
-        c = Corpus.from_easy_ai()
+        c = Corpus.from_easy_ai(include_web=False)
         tr, ho = c.split(0.8)
         m = MarkovChain(n=3, smoothing="kneser_ney", unk_cutoff=1)
         m.train(tr.ai_texts or tr.all_texts)

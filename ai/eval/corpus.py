@@ -75,13 +75,16 @@ class Corpus:
     @classmethod
     def from_easy_ai(cls, root: Optional[str] = None,
                      include_rules: bool = True,
-                     include_paotuan: bool = True) -> "Corpus":
+                     include_paotuan: bool = True,
+                     include_web: bool = True) -> "Corpus":
         """从 easy-ai 项目自身的真实事件流构建语料。
 
         Args:
             root: 项目根目录，默认按本文件位置推导（ai/eval/ → 上两级）。
             include_rules: 是否并入规则库作为对照源。
             include_paotuan: 是否并入 paotuan/ TRPG 模组（P1 新增的主力语料）。
+            include_web: 是否并入联网抓取的语料（`.cache/corpus_web.jsonl`，
+                由 `tools/fetch_corpus.py` 生成；**不入仓**，缺失时静默跳过）。
         """
         if root is None:
             root = str(Path(__file__).resolve().parents[2])
@@ -127,11 +130,38 @@ class Corpus:
             texts += p_texts
             pairs += p_pairs
 
-        # ⑤ 规则库（旧语料，仅作对照）
+        # ⑤ 联网语料（P3：把语料规模从 7950 提到 10 万 token）
+        if include_web:
+            texts += cls._load_web(root_p / ".cache" / "corpus_web.jsonl")
+
+        # ⑥ 规则库（旧语料，仅作对照）
         if include_rules:
             pairs += cls._load_rules(root_p / "config" / "default.json")
 
         return cls(name="easy-ai", texts=texts, pairs=pairs)
+
+    @staticmethod
+    def _load_web(fp: Path) -> List[str]:
+        """加载联网抓取的语料（JSONL，每行 {source,title,text}）。
+
+        纯文本文档，无问答结构，故只进 `texts` 不进 `pairs`。
+        文件缺失时静默返回空 —— 这是**可再生产物**，不该让启动失败。
+        """
+        out: List[str] = []
+        if not fp.exists():
+            return out
+        try:
+            for line in fp.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                rec = json.loads(line)
+                t = rec.get("text", "") if isinstance(rec, dict) else ""
+                if t and len(t) >= 20:
+                    out.append(t)
+        except (OSError, json.JSONDecodeError):
+            return out
+        return out
 
     # ---------- paotuan TRPG 模组 ----------
     @classmethod

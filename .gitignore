@@ -8,3 +8,6 @@ release/
 data/textcnn_weights.json
 
 data/textcnn_rerank_weights.json
+
+# 联网抓取语料：可再生产物（python tools/fetch_corpus.py 重建），不入库
+.cache/

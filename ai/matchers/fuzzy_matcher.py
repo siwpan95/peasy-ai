@@ -46,18 +46,35 @@ class FuzzyMatcher(BaseMatcher):
             self._try_load_tfidf()
 
     def _try_load_tfidf(self):
+        """探测可选依赖（TF-IDF 增强路径）。
+
+        ⚠️ 只 `import jieba` 成功并不代表可用 —— 本机 `E:\\Python314` 里装的是
+        一个**不完整**的 jieba（有 `cut` 但无 `lcut`），会在真正分词时才抛
+        AttributeError。故这里显式校验所需属性，探测失败即整体降级。
+        """
         try:
             import jieba  # noqa: F401
+            if not hasattr(jieba, "lcut") or not callable(jieba.lcut):
+                raise ImportError("jieba 不完整：缺少 lcut")
             from sklearn.feature_extraction.text import TfidfVectorizer  # noqa: F401
             from sklearn.metrics.pairwise import cosine_similarity  # noqa: F401
             import numpy as np  # noqa: F401
             self._use_tfidf = True
-        except ImportError:
+        except (ImportError, AttributeError):
             self._use_tfidf = False
 
     def _tokenize(self, text: str) -> str:
-        import jieba
-        return " ".join(jieba.lcut(text))
+        """分词：优先 jieba，缺失/不完整时降级到项目共享分词器。
+
+        降级路径复用 `ai.eval.tokenize`（中文按字、英文按词），
+        保证全项目分词口径一致 —— 这也是 perplexity 可比性的前提。
+        """
+        try:
+            import jieba
+            return " ".join(jieba.lcut(text))
+        except (ImportError, AttributeError):
+            from ..eval.tokenize import tokenize
+            return " ".join(tokenize(text))
 
     def _build_index(self, rules: List[Dict[str, Any]]):
         if not self._use_tfidf:

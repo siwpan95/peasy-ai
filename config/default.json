@@ -79,6 +79,16 @@
       "threshold": 0.25,
       "min_confidence": 0.2,
       "use_tfidf": true
+    },
+    "markov": {
+      "enabled": true,
+      "priority": 30,
+      "n_gram": 3,
+      "smoothing": "kneser_ney",
+      "unk_cutoff": 1,
+      "temperature": 0.8,
+      "max_length": 80,
+      "corpus": "auto"
     }
   },
 

@@ -66,7 +66,7 @@ class ConfigLoader:
         return {
             "schema_version": "1.0",
             "name": "easy-ai",
-            "version": "2.0",
+            "version": "2.2.0",
 
             # 安全过滤器
             "safety": {

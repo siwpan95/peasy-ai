@@ -59,3 +59,4 @@ def discover_and_register():
     from . import regex_matcher  # noqa: F401
     from . import fuzzy_matcher  # noqa: F401
     from . import markov_chain   # noqa: F401
+    from . import neural_matcher  # noqa: F401

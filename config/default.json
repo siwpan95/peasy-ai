@@ -89,6 +89,18 @@
       "temperature": 0.8,
       "max_length": 80,
       "corpus": "auto"
+    },
+    "neural": {
+      "enabled": false,
+      "priority": 35,
+      "window": 4,
+      "embed_dim": 32,
+      "n_filters": 32,
+      "epochs": 20,
+      "temperature": 0.8,
+      "max_length": 60,
+      "weights": "auto",
+      "corpus": "auto"
     }
   },
 

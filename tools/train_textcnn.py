@@ -38,27 +38,38 @@ def main():
     ap.add_argument("--lr", type=float, default=0.05)
     ap.add_argument("--ratio", type=float, default=0.8)
     ap.add_argument("--no-paotuan", action="store_true", help="训练语料排除 paotuan")
+    ap.add_argument("--full", action="store_true",
+                    help="用全量语料训练（不划分留出）。**生产权重必须用它** —— "
+                         "否则导出的权重没见过留出部分，运行期检索到那些原文时会给出"
+                         "很低的概率，导致 neural 匹配器永远输给马尔科夫（实测踩到）。")
     ap.add_argument("--report", action="store_true", help="打印留出集评估报告")
     args = ap.parse_args()
 
     corpus = Corpus.from_easy_ai(include_paotuan=not args.no_paotuan)
-    train, hold = corpus.split(args.ratio)
-    T = train.ai_texts or train.all_texts
-    H = hold.all_texts
-
-    print(f"语料 {corpus}  →  训练 {len(T)} 条 / 留出 {len(H)} 条")
+    if args.full:
+        T = corpus.ai_texts or corpus.all_texts
+        H = []
+        print(f"语料 {corpus}  →  **全量训练** {len(T)} 条（无留出，用于生产权重）")
+    else:
+        train, hold = corpus.split(args.ratio)
+        T = train.ai_texts or train.all_texts
+        H = hold.all_texts
+        print(f"语料 {corpus}  →  训练 {len(T)} 条 / 留出 {len(H)} 条")
 
     t0 = time.perf_counter()
     m = TextCNN(window=args.window, embed_dim=args.dim,
                 n_filters=args.filters, lr=args.lr, unk_cutoff=1)
     fit = m.fit(T, epochs=args.epochs, batch_size=args.batch, verbose=True,
-                holdout_texts=H)
+                holdout_texts=H if H else None)
     dt = time.perf_counter() - t0
     print(f"\n训练完成：{fit['samples']} 样本 / 词表 {fit['vocab']} / 耗时 {dt:.1f}s")
 
-    if args.report:
+    if args.report and H:
         print()
         print(format_report(evaluate(m, H), "TextCNN 留出集"))
+    elif args.report:
+        print("\n（--full 模式无留出集，跳过评估报告；"
+              "要评估请不加 --full，改用 tools/eval_textcnn.py）")
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

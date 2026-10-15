@@ -29,7 +29,7 @@ import random
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
-from .eval.tokenize import tokenize, BOS, EOS, UNK
+from .eval.tokenize import tokenize, detokenize, BOS, EOS, UNK
 from .eval.metrics import LOG_FLOOR
 
 try:
@@ -332,6 +332,97 @@ class TextCNN:
     def perplexity(self, texts: List[str]) -> float:
         from .eval.metrics import perplexity as _pp
         return _pp(self, texts)
+
+    def sequence_log_prob(self, tokens: Sequence[str]) -> float:
+        """整段序列的对数似然（自动补 BOS）—— 与 MarkovChain 同接口。
+
+        供 `confidence()` 类的质量度量使用；两侧必须同口径，
+        否则马尔科夫与神经网络的置信度无法放在一起比较。
+        """
+        if not self._trained or not tokens:
+            return LOG_FLOOR * max(len(tokens), 1)
+        toks = [BOS] + list(tokens)
+        total = 0.0
+        for i in range(1, len(toks)):
+            total += self.log_prob(toks[:i], toks[i])
+        return total
+
+    def confidence(self, text: str) -> float:
+        """相对均匀基线的归一化增益 ∈ [0,1]（与 MarkovChain.confidence 同口径）。"""
+        if not self._trained or not text:
+            return 0.0
+        toks = tokenize(text)
+        if not toks:
+            return 0.0
+        mlp = self.sequence_log_prob(toks) / len(toks)
+        V = max(self.vocab_size, 2)
+        gain = (mlp + math.log(V)) / math.log(V)
+        return max(0.0, min(1.0, gain))
+
+    # ============================================================
+    # 生成（自回归采样，供对话链路使用）
+    # ============================================================
+    def sample(self, seed_prefix: Optional[Sequence[str]] = None,
+               max_length: int = 60, temperature: float = 0.8) -> str:
+        """从种子开始逐 token 自回归采样。
+
+        每步都要跑一次前向（词表规模 V 上的 softmax），因此比查表式的
+        马尔科夫链慢约一个量级 —— 这是接入链路时必须知道的成本。
+
+        UNK 与 PAD **只推进上下文、不写入输出**，与 MarkovChain.sample 同策略：
+        否则会在句子中间留下空洞（P0 实测过的碎片化问题）。
+        """
+        if not self._trained:
+            return ""
+        ctx: List[str] = list(seed_prefix or [])
+        out: List[str] = []
+        rng = random.Random(self._rng.randint(0, 1 << 30))
+
+        for _ in range(max_length):
+            probs = self._probs_for_context(ctx)
+            if probs is None:
+                break
+            w = probs ** (1.0 / temperature) if temperature > 0 else probs
+            total = float(w.sum())
+            if total <= 0:
+                break
+            r = rng.random() * total
+            acc = 0.0
+            pick = int(len(w) - 1)
+            for i, p in enumerate(w):
+                acc += float(p)
+                if r <= acc:
+                    pick = i
+                    break
+            tok = self._itos[pick]
+            if tok == EOS:
+                break
+            if tok not in (UNK, PAD):
+                out.append(tok)
+            ctx.append(tok)
+            # 上下文只保留最近若干 token，避免无限增长拖慢每步前向
+            if len(ctx) > self.window * 3:
+                ctx = ctx[-self.window * 3:]
+            if tok in ('。', '！', '？', '!', '?', '.') and rng.random() < 0.3:
+                break
+
+        return detokenize(out)
+
+    def generate_variations(self, seed_prefix: Sequence[str], count: int = 3,
+                            temperature: float = 0.8,
+                            max_length: int = 60) -> List[str]:
+        """采样多个候选（对话回复多样性）。"""
+        seen: Set[str] = set()
+        out: List[str] = []
+        for _ in range(count * 2):
+            s = self.sample(seed_prefix, max_length=max_length,
+                            temperature=temperature)
+            if s and s not in seen:
+                seen.add(s)
+                out.append(s)
+            if len(out) >= count:
+                break
+        return out
 
     # ============================================================
     # 意图分类（复用同一骨干，接一个分类头之外的用法）

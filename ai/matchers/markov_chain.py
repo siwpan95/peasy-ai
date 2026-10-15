@@ -31,6 +31,7 @@ from ..eval.tokenize import tokenize, detokenize, BOS, EOS, UNK
 from ..eval.metrics import LOG_FLOOR
 from .base import BaseMatcher, MatchResult
 from .registry import register_matcher
+from .retrieval import RetrievalIndex
 
 # Kneser-Ney 折扣系数（经验值 0.75，Chen & Goodman 扫描结果的常用档）
 KN_DISCOUNT = 0.75
@@ -515,8 +516,8 @@ class MarkovMatcher(BaseMatcher):
         self._ai_chain = MarkovChain(n=self.n_gram, smoothing=smoothing,
                                      k=cfg.get("k", 0.1),
                                      unk_cutoff=cfg.get("unk_cutoff", 1))
-        # 检索索引：字符 bigram → 候选下标（D8 修复：替代 O(N×M) 双重循环）
-        self._index: Dict[Tuple[str, str], List[int]] = {}
+        # 检索索引（与 NeuralMatcher 共用同一实现，见 ai/matchers/retrieval.py）
+        self._index = RetrievalIndex()
         self._questions: List[str] = []
         self._answers: List[str] = []
 
@@ -601,43 +602,13 @@ class MarkovMatcher(BaseMatcher):
         self._answers = list(texts)
         self._build_index(texts)
 
-    # ---------- 检索索引（D8 修复）----------
+    # ---------- 检索索引（与 NeuralMatcher 共用实现）----------
     def _build_index(self, questions: List[str]):
-        """字符 bigram 倒排索引：构建 O(N)，查询 O(输入长度)。
-
-        旧版 `_build_corpus_keywords` 对每个 prefix 扫描全部语料，是
-        O(状态数 × 语料数) 的双重循环；`_build_keyword_index` 更是空实现。
-        """
-        self._index.clear()
-        for i, q in enumerate(questions):
-            toks = tokenize(q)
-            grams = [(toks[j], toks[j + 1]) for j in range(len(toks) - 1)]
-            if not grams and toks:
-                grams = [(toks[0], toks[0])]
-            for g in set(grams):
-                self._index.setdefault(g, []).append(i)
+        self._index.build(questions)
 
     def retrieve(self, text: str, top_n: int = 3) -> List[Tuple[int, float]]:
-        """检索与输入最相关的历史问答，返回 [(下标, 相关性)]。
-
-        相关性 = 命中 bigram 数 / 输入 bigram 数（0-1 归一）。
-        """
-        toks = tokenize(text or "")
-        grams = [(toks[j], toks[j + 1]) for j in range(len(toks) - 1)]
-        if not grams:
-            if toks:
-                grams = [(toks[0], toks[0])]
-            else:
-                return []
-        hit: Dict[int, int] = defaultdict(int)
-        for g in grams:
-            for i in self._index.get(g, ()):
-                hit[i] += 1
-        if not hit:
-            return []
-        scored = [(i, c / len(grams)) for i, c in hit.items()]
-        scored.sort(key=lambda x: (-x[1], x[0]))
-        return scored[:top_n]
+        """检索与输入最相关的历史问答，返回 [(下标, 相关性)]（0-1 归一）。"""
+        return self._index.retrieve(text, top_n)
 
     # ---------- 匹配 ----------
     def match(self, text: str, rules: List[Dict[str, Any]]) -> Optional[MatchResult]:

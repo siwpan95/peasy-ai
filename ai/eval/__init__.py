@@ -11,7 +11,7 @@ ai.eval —— 评估地基（P0）。
 靠的就是「留出集 + 均匀基线 + 相对增益 + 合成可判定用例」这套尺子。
 """
 
-from .tokenize import tokenize, tokenize_with_bounds, detokenize, BOS, EOS, UNK
+from .tokenize import tokenize, tokenize_with_bounds, detokenize, BOS, EOS, UNK, SEP
 from .corpus import Corpus, QAPair
 from .metrics import (
     perplexity,
@@ -26,7 +26,7 @@ from .metrics import (
 )
 
 __all__ = [
-    "tokenize", "tokenize_with_bounds", "detokenize", "BOS", "EOS", "UNK",
+    "tokenize", "tokenize_with_bounds", "detokenize", "BOS", "EOS", "UNK", "SEP",
     "Corpus", "QAPair",
     "perplexity", "mean_log_prob", "top_k_accuracy", "oov_rate", "coverage",
     "uniform_baseline", "relative_gain", "evaluate", "format_report",

@@ -6,3 +6,5 @@ release/
 
 # TextCNN 权重：可再生产物（python tools/train_textcnn.py 重建），不入库
 data/textcnn_weights.json
+
+data/textcnn_rerank_weights.json

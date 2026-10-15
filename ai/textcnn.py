@@ -29,7 +29,7 @@ import random
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
-from .eval.tokenize import tokenize, detokenize, BOS, EOS, UNK
+from .eval.tokenize import tokenize, detokenize, BOS, EOS, UNK, SEP
 from .eval.metrics import LOG_FLOOR
 
 try:
@@ -85,7 +85,7 @@ class TextCNN:
                 freq[tok] = freq.get(tok, 0) + 1
         kept = {t for t, c in freq.items()
                 if (c > self.unk_cutoff if self.unk_cutoff > 0 else True)}
-        kept.update((BOS, EOS, UNK))
+        kept.update((BOS, EOS, UNK, SEP))
         self._kept = kept
         self._itos = [PAD] + sorted(kept)
         self._stoi = {w: i for i, w in enumerate(self._itos)}
@@ -110,15 +110,30 @@ class TextCNN:
     # ============================================================
     # 样本构造
     # ============================================================
-    def build_samples(self, texts: List[str]) -> Tuple[np.ndarray, np.ndarray]:
+    def build_samples(self, texts: List[str],
+                      conditions: Optional[Sequence[str]] = None
+                      ) -> Tuple[np.ndarray, np.ndarray]:
         """构造 (context → next token) 监督样本。
 
-        X: (N, window) 左填充的上下文 id；y: (N,) 目标 token id。
+        Args:
+            texts: 目标文本（回答）。
+            conditions: 与 texts 一一对应的条件前缀（问题）。
+                传入时训练的是**条件**语言模型 P(回答|问题)，序列为
+                `[BOS] 问题 SEP 回答 EOS`。
+
+        ⚠️ 为什么必须支持 conditions：最初版本只训无条件语言模型，
+        却拿它去做 P(回答|问题) 的候选打分 —— 训练与推理的 context 分布
+        根本不一致，打分自然失效（实测 top-1 只有 5%，远不如朴素的
+        字符 bigram Jaccard 的 60%）。要做条件打分，训练就必须带条件。
         """
         Xs: List[List[int]] = []
         ys: List[int] = []
-        for text in texts:
-            toks = [BOS] + tokenize(text) + [EOS]
+        for j, text in enumerate(texts):
+            cond = conditions[j] if conditions is not None and j < len(conditions) else None
+            toks = [BOS] + tokenize(cond or "")
+            if cond:
+                toks.append(SEP)
+            toks += tokenize(text) + [EOS]
             ids = self._encode(toks)
             for i in range(1, len(ids)):
                 ctx = ids[max(0, i - self.window):i]
@@ -244,10 +259,20 @@ class TextCNN:
     # ============================================================
     def fit(self, texts: List[str], epochs: int = 8, batch_size: int = 64,
             lr: Optional[float] = None, verbose: bool = False,
-            holdout_texts: Optional[List[str]] = None) -> Dict[str, Any]:
-        """训练。返回训练曲线（留出的 perplexity 用于观察过拟合）。"""
+            holdout_texts: Optional[List[str]] = None,
+            conditions: Optional[Sequence[str]] = None) -> Dict[str, Any]:
+        """训练。返回训练曲线（留出的 perplexity 用于观察过拟合）。
+
+        Args:
+            conditions: 条件前缀（问题）。传入即训练**条件**语言模型 ——
+                做候选重排序（P(回答|问题)）时**必须**传入：否则训练与推理
+                的 context 分布不一致，打分会失效（实测 top-1 仅 5%）。
+        """
+        vocab_src = list(texts)
+        if conditions:
+            vocab_src += [c for c in conditions if c]
         if not self._itos:
-            self.build_vocab(texts)
+            self.build_vocab(vocab_src)
         self._init_params()
         # ⚠️ 必须在训练循环**之前**置位：否则每轮的留出 perplexity 会因
         # log_prob 走「未训练」分支而一律返回 LOG_FLOOR，
@@ -255,7 +280,7 @@ class TextCNN:
         self._trained = True
         lr = self.lr if lr is None else lr
 
-        X, y = self.build_samples(texts)
+        X, y = self.build_samples(texts, conditions)
         n = len(X)
         history: List[Dict[str, float]] = []
 
@@ -346,6 +371,47 @@ class TextCNN:
         for i in range(1, len(toks)):
             total += self.log_prob(toks[:i], toks[i])
         return total
+
+    def score_candidates(self, question: str, candidates: Sequence[str],
+                         length_normalize: bool = True) -> List[float]:
+        """条件似然打分：Σ log P(候选_i | 问题 + 候选_{<i})。
+
+        这是把 CNN 用回它**被证明更强**的场景的关键 —— P2 的对照显示，
+        TextCNN 在 teacher-forcing（用真实前驱预测下一个 token）上比 n-gram 高
+        9.14pp；而自由生成时它会输给「精确记忆原句」的马尔科夫。
+        打分器正好只需要前者：候选是给定的，模型只需判断哪个更贴切。
+
+        与语言模型打分的经典做法一致（用 P(回复|问题) 给候选重排序），
+        且**不需要新模型** —— 现有的 context→next 结构天然可用。
+
+        Args:
+            question: 用户输入（作为条件前缀）。
+            candidates: 候选回复列表。
+            length_normalize: 按 token 数取平均，避免长候选因累加而吃亏。
+
+        Returns:
+            每个候选的得分（越大越好；未训练时全为 -inf）。
+        """
+        if not self._trained:
+            return [float("-inf")] * len(candidates)
+
+        # 必须与条件训练时的序列构造一致：`[BOS] 问题 SEP 回答`
+        q_tokens = [BOS] + tokenize(question or "")
+        if question:
+            q_tokens.append(SEP)
+        scores: List[float] = []
+        for cand in candidates:
+            c_tokens = tokenize(cand or "")
+            if not c_tokens:
+                scores.append(float("-inf"))
+                continue
+            ctx = list(q_tokens)
+            total = 0.0
+            for t in c_tokens:
+                total += self.log_prob(ctx, t)
+                ctx.append(t)
+            scores.append(total / len(c_tokens) if length_normalize else total)
+        return scores
 
     def confidence(self, text: str) -> float:
         """相对均匀基线的归一化增益 ∈ [0,1]（与 MarkovChain.confidence 同口径）。"""

@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import numpy as np
 
-from ai.eval import tokenize, BOS, EOS, UNK, evaluate, perplexity
+from ai.eval import tokenize, BOS, EOS, UNK, SEP, evaluate, perplexity
 from ai.matchers.markov_chain import MarkovChain
 from ai.textcnn import TextCNN, PAD_ID
 
@@ -121,8 +121,9 @@ class TestEvalProtocolParity(unittest.TestCase):
         mc.train(corpus)
         cnn = TextCNN(window=4, unk_cutoff=1)
         cnn.build_vocab(corpus)
-        # 词表集合一致（CNN 多一个 PAD，比较时排除）
-        self.assertEqual(mc.vocab - {UNK}, cnn.vocab - {UNK})
+        # 词表集合一致。SEP 是 TextCNN 做条件建模（问题→回答）特有的分隔标记，
+        # 马尔科夫链不做条件建模，故比较时排除它。
+        self.assertEqual(mc.vocab - {UNK, SEP}, cnn.vocab - {UNK, SEP})
         self.assertEqual(mc._norm("独"), cnn._norm("独"))
 
     def test_exposes_evaluation_protocol(self):

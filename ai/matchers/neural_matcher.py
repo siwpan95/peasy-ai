@@ -31,8 +31,11 @@ from .retrieval import RetrievalIndex
 
 _log = logging.getLogger(__name__)
 
-# 权重默认位置（相对项目根）
+# 权重默认位置（相对项目根）。按用途分开 —— 无条件模型用于自由生成，
+# 条件模型 P(回答|问题) 用于重排序；两者训练的 context 构造不同，
+# 混用会让打分失效（实测 top-1 只有 5%，条件化后升到 40%）。
 DEFAULT_WEIGHTS = "data/textcnn_weights.json"
+DEFAULT_WEIGHTS_RERANK = "data/textcnn_rerank_weights.json"
 
 
 @register_matcher("neural")
@@ -47,6 +50,19 @@ class NeuralMatcher(BaseMatcher):
         self.temperature = cfg.get("temperature", 0.8)
         self.max_length = int(cfg.get("max_length", 60))
         self.n_candidates = int(cfg.get("n_candidates", 3))
+
+        # 工作模式：
+        #   generate — 自回归生成候选（P2 默认；实测在似然口径下不敌记忆型马尔科夫）
+        #   rerank   — 不生成，只给检索到的真实语料候选打分排序
+        #              这是 CNN 的正确定位：它强在 teacher-forcing 的泛化评估。
+        self.mode = cfg.get("mode", "rerank")
+        # rerank 候选池大小（从检索结果里取前 N 条原文）
+        self.rerank_pool = int(cfg.get("rerank_pool", 5))
+        # 打分器：cnn（条件似然，默认）/ jaccard（朴素词汇匹配）/ hybrid（两者加权）
+        # 实测（tools/eval_rerank.py，留出 20 条）：jaccard 60.00% > cnn 40.00%，
+        # 但样本量小、不足以定论；故做成可配置，让实测数据决定用哪个。
+        self.scorer = cfg.get("scorer", "cnn")
+        self.hybrid_alpha = float(cfg.get("hybrid_alpha", 0.5))
 
         self._index = RetrievalIndex()
         self._questions: List[str] = []
@@ -70,7 +86,7 @@ class NeuralMatcher(BaseMatcher):
         # ① 优先加载已有权重（毫秒级）—— 这只会恢复「怎么说话」的语言模型
         weights = cfg.get("weights", "auto")
         if weights:
-            path = self._resolve_weights(weights)
+            path = self._resolve_weights(weights, rerank=(self.mode == "rerank"))
             if path and path.exists():
                 try:
                     self._cnn = TextCNN.load(str(path))
@@ -87,9 +103,11 @@ class NeuralMatcher(BaseMatcher):
 
     # ---------- 初始化 ----------
     @staticmethod
-    def _resolve_weights(spec: str) -> Optional[Path]:
+    def _resolve_weights(spec: str, rerank: bool = False) -> Optional[Path]:
         if spec == "auto":
-            return Path(__file__).resolve().parents[2] / DEFAULT_WEIGHTS
+            base = Path(__file__).resolve().parents[2]
+            name = DEFAULT_WEIGHTS_RERANK if rerank else DEFAULT_WEIGHTS
+            return base / name
         return Path(spec)
 
     def _init_from_corpus(self, spec: str, need_train: bool):
@@ -134,7 +152,110 @@ class NeuralMatcher(BaseMatcher):
     def match(self, text: str, rules: List[Dict[str, Any]]) -> Optional[MatchResult]:
         if not self._ready or not self._answers:
             return None
+        if self.mode == "rerank":
+            return self._match_rerank(text)
+        return self._match_generate(text)
 
+    def _match_rerank(self, text: str) -> Optional[MatchResult]:
+        """重排序模式：检索出候选原文 → 用 CNN 条件似然挑最贴切的。
+
+        与生成模式的根本区别：**不产出新文本**。候选全部来自真实语料，
+        因此天然继承了 P0 建立的「原文保底」质量下限，同时用上了 CNN
+        在 teacher-forcing 上的泛化优势（P2 实测 +9.14pp）。
+        """
+        hits = self._index.retrieve(text, top_n=self.rerank_pool)
+        if not hits:
+            return None
+
+        idxs = [i for i, _ in hits]
+        rels = {i: r for i, r in hits}
+        candidates = [self._answers[i] for i in idxs if i < len(self._answers)]
+        if not candidates:
+            return None
+
+        if self.scorer == "jaccard":
+            scores = [self._jaccard(text, c) for c in candidates]
+        elif self.scorer == "hybrid":
+            cnn_scores = [self._normalize_score(s)
+                          for s in self._cnn.score_candidates(text, candidates)]
+            jac_scores = [self._jaccard(text, c) for c in candidates]
+            a = self.hybrid_alpha
+            scores = [a * c + (1 - a) * j for c, j in zip(cnn_scores, jac_scores)]
+        else:  # cnn
+            scores = [self._normalize_score(s)
+                      for s in self._cnn.score_candidates(text, candidates)]
+
+        # 「选得有多确定」：对打分离散度做 softmax，最优候选明显胜出时权重→1，
+        # 候选难分时权重→1/池大小。
+        # ⚠️ 不能直接用「绝对似然」当置信度：rerank 算的是 P(原文|问题)（条件），
+        # 马尔科夫算的是 P(原文)（无条件、记忆型，天然高得多）—— 两者量纲不同，
+        # 直接比大小会让 rerank 永远落败（实测 0.09 vs 0.75）。
+        choice_conf = self._softmax_top_weight(scores)
+
+        ranked = []
+        for idx, cand, sc in zip(idxs, candidates, scores):
+            rel = rels.get(idx, 0.0)
+            ranked.append((sc, sc, rel, cand, idx))
+        if not ranked:
+            return None
+        ranked.sort(key=lambda x: -x[0])
+        _, quality, rel, best, best_idx = ranked[0]
+
+        return MatchResult(
+            reply=best,
+            confidence=min(rel * choice_conf, 0.75),
+            source=self.name,
+            metadata={
+                "model": "TextCNN",
+                "mode": "rerank",
+                "pool": len(candidates),
+                "cnn_score": round(quality, 4),
+                "relevance": round(rel, 4),
+                "ranked_count": len(ranked),
+            },
+        )
+
+    @staticmethod
+    def _softmax_top_weight(scores: Sequence[float], temperature: float = 0.05) -> float:
+        """最优候选的 softmax 权重 ∈ (0,1]，衡量「选择有多确定」。
+
+        温度取小值：候选间只要有可辨差异，最优项就应获得接近 1 的权重；
+        若候选难分伯仲，权重自然回落到 1/池大小。
+        """
+        import math
+        vals = [s for s in scores if s is not None and s != float("-inf")]
+        if not vals:
+            return 0.0
+        top = max(vals)
+        exps = [math.exp((s - top) / temperature) for s in vals]
+        total = sum(exps)
+        return (1.0 / total) if total > 0 else 0.0
+
+    @staticmethod
+    def _jaccard(a: str, b: str) -> float:
+        """字符 bigram Jaccard —— 朴素词汇匹配打分器。"""
+        def grams(t):
+            tk = tokenize(t)
+            return set((tk[i], tk[i + 1]) for i in range(len(tk) - 1)) or set(tk)
+        ga, gb = grams(a or ""), grams(b or "")
+        if not ga or not gb:
+            return 0.0
+        return len(ga & gb) / len(ga | gb)
+
+    def _normalize_score(self, avg_logprob: float) -> float:
+        """把每 token 平均对数似然映射到 [0,1]（相对均匀基线增益）。
+
+        与 MarkovChain.confidence / TextCNN.confidence 完全同口径 ——
+        0 = 跟瞎猜一样，1 = 确定性预测。
+        """
+        if avg_logprob is None or avg_logprob == float("-inf"):
+            return 0.0
+        import math
+        V = max(self._cnn.vocab_size, 2)
+        log_v = math.log(V)
+        return max(0.0, min(1.0, (avg_logprob + log_v) / log_v))
+
+    def _match_generate(self, text: str) -> Optional[MatchResult]:
         hits = self._index.retrieve(text, top_n=1)
         if not hits:
             return None

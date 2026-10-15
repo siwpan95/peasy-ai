@@ -20,6 +20,8 @@ BOS = "<s>"
 EOS = "</s>"
 # 未登录词兜底：低频词与留出集新词统一折叠到此，避免概率归零
 UNK = "<unk>"
+# 条件分隔标记：用于「问题 → 回答」的条件语言模型，隔开条件与生成部分
+SEP = "<sep>"
 
 
 def tokenize(text: str) -> List[str]:
@@ -38,7 +40,7 @@ def detokenize(tokens: List[str]) -> str:
     """还原为中文可读文本：中文/标点直接拼接，英文单词之间补空格。"""
     out = []
     for i, t in enumerate(tokens):
-        if t in (BOS, EOS, UNK):
+        if t in (BOS, EOS, UNK, SEP):
             continue
         if out and _needs_space(out[-1], t):
             out.append(" ")

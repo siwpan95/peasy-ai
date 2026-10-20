@@ -15,7 +15,12 @@
 > | 导入 | **easy_ai** | `import easy_ai` |
 > | 命令行 | **peasy-ai** | `peasy-ai chat` |
 
-仓库：<https://gitee.com/siwpan/easy-ai> ｜ 许可：MIT（见 [LICENSE](LICENSE)）
+仓库：<https://gitee.com/siwpan/peasy-ai> ｜ 许可：MIT（见 [LICENSE](LICENSE)）
+
+> **仓库改名**：本仓库原为 `siwpan/easy-ai`，因 PyPI 发行名改为 `peasy-ai`
+> （`easy-ai`/`easy_ai`/`easyai` 均被占用，`easya1` 被 PyPI 判为与 `easyai` 过于相似），
+> 按既有做法**删仓重建**为 `siwpan/peasy-ai`，而非在旧仓上改名 —— 避免残留矛盾内容。
+> 旧地址已失效且无重定向。
 
 ## 安装
 

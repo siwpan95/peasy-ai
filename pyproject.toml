@@ -34,9 +34,9 @@ all = ["numpy>=1.20", "jieba>=0.42", "scikit-learn>=1.0"]
 dev = ["pytest>=7.0", "build>=1.0", "twine>=5.0"]
 
 [project.urls]
-Homepage = "https://gitee.com/siwpan/easy-ai"
-Source = "https://gitee.com/siwpan/easy-ai"
-Changelog = "https://gitee.com/siwpan/easy-ai/blob/master/CHANGELOG.md"
+Homepage = "https://gitee.com/siwpan/peasy-ai"
+Source = "https://gitee.com/siwpan/peasy-ai"
+Changelog = "https://gitee.com/siwpan/peasy-ai/blob/master/CHANGELOG.md"
 
 [project.scripts]
 peasy-ai = "easy_ai.main:main"

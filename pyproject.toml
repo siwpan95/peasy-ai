@@ -3,7 +3,7 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "easya1"
+name = "peasy-ai"
 version = "1.0.0"
 description = "零硬编码、配置驱动的通用 AI 对话框架：AI 核心 + 叙事引擎 + TRPG 训练场"
 readme = "README.md"
@@ -39,7 +39,7 @@ Source = "https://gitee.com/siwpan/easy-ai"
 Changelog = "https://gitee.com/siwpan/easy-ai/blob/master/CHANGELOG.md"
 
 [project.scripts]
-easya1 = "easy_ai.main:main"
+peasy-ai = "easy_ai.main:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

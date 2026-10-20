@@ -1,26 +1,27 @@
 # easy-ai — 通用 AI 对话框架
 
-[![PyPI version](https://img.shields.io/pypi/v/easya1)](https://pypi.org/project/easya1/)
-[![Python versions](https://img.shields.io/pypi/pyversions/easya1)](https://pypi.org/project/easya1/)
-[![License](https://img.shields.io/pypi/l/easya1)](https://pypi.org/project/easya1/)
+[![PyPI version](https://img.shields.io/pypi/v/peasy-ai)](https://pypi.org/project/peasy-ai/)
+[![Python versions](https://img.shields.io/pypi/pyversions/peasy-ai)](https://pypi.org/project/peasy-ai/)
+[![License](https://img.shields.io/pypi/l/peasy-ai)](https://pypi.org/project/peasy-ai/)
 
 零硬编码、配置驱动、可嵌入任意项目的 AI 核心 + 叙事引擎 + TRPG 训练场。
 
-> **发行名 vs 导入名**（PyPI 上 `easy-ai` / `easy_ai` / `easyai` 均已被他人占用，故发行名取 `easya1`）：
+> **发行名 vs 导入名**（PyPI 上 `easy-ai` / `easy_ai` / `easyai` 均已被他人占用，
+> 且 `easya1` 会被 PyPI 判为与既有的 `easyai`「过于相似」而拒收，故发行名取 `peasy-ai`）：
 >
 > | 用途 | 名字 | 写法 |
 > |---|---|---|
-> | 安装 | **easya1** | `pip install easya1` |
+> | 安装 | **peasy-ai** | `pip install peasy-ai` |
 > | 导入 | **easy_ai** | `import easy_ai` |
-> | 命令行 | **easya1** | `easya1 chat` |
+> | 命令行 | **peasy-ai** | `peasy-ai chat` |
 
 仓库：<https://gitee.com/siwpan/easy-ai> ｜ 许可：MIT（见 [LICENSE](LICENSE)）
 
 ## 安装
 
 ```bash
-pip install easya1                  # 核心零依赖，纯标准库即可运行
-pip install easya1[all]             # 可选：numpy + jieba + scikit-learn
+pip install peasy-ai                 # 核心零依赖，纯标准库即可运行
+pip install peasy-ai[all]             # 可选：numpy + jieba + scikit-learn
 ```
 
 可选依赖按需安装：`[numpy]`（TextCNN / 神经网络匹配器）、`[jieba]`（中文分词增强）、
@@ -30,16 +31,16 @@ pip install easya1[all]             # 可选：numpy + jieba + scikit-learn
 ## 命令行
 
 ```bash
-easya1 --help                       # 查看所有子命令（等价于 python -m easy_ai --help）
+peasy-ai --help                      # 查看所有子命令（等价于 python -m easy_ai --help）
 
-easya1 chat                        # AI 闲聊（CLI）
-easya1 chat --ui                    # AI 闲聊（tkinter GUI）
-easya1 story                       # 叙事引擎（互动故事）
-easya1 paotuan                      # 迷失之镜 TRPG 跑团
-easya1 trpg dice 3d6+2              # TRPG 掷骰
-easya1 trpg npc -n 3                # 随机 NPC
-easya1 train                        # AI 训练模式（跑团事件 → 自动学习）
-easya1 demo                         # 运行全部演示
+peasy-ai chat                        # AI 闲聊（CLI）
+peasy-ai chat --ui                   # AI 闲聊（tkinter GUI）
+peasy-ai story                       # 叙事引擎（互动故事）
+peasy-ai paotuan                     # 迷失之镜 TRPG 跑团
+peasy-ai trpg dice 3d6+2             # TRPG 掷骰
+peasy-ai trpg npc -n 3               # 随机 NPC
+peasy-ai train                       # AI 训练模式（跑团事件 → 自动学习）
+peasy-ai demo                        # 运行全部演示
 ```
 
 ## 核心用法
@@ -129,7 +130,7 @@ random_npc()                          # → {"name": "索菲亚·铁锤", ...}
 easy-ai/
 ├── src/easy_ai/             # 📦 发行内容（导入名 easy_ai）
 │   ├── __init__.py          #   公共 API 重导出
-│   ├── main.py              #   命令行主入口（easya1 / python -m easy_ai）
+│   ├── main.py              #   命令行主入口（peasy-ai / python -m easy_ai）
 │   ├── ai/                  # 🧠 AI 大脑
 │   │   ├── core.py          #     AICore — 主入口类
 │   │   ├── config_loader.py #     JSON 配置加载与校验

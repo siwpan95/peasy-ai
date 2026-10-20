@@ -6,20 +6,20 @@
 
 > 说明：v1.0.0 之后、v2.2.0 之前的改动（去本地化、README 整理、.gitignore 补齐等）当时未记入本文件，此处据提交历史补记。
 >
-> 版本号的另一次说明见下：PyPI 首发（easya1 1.0.0）**不继承**仓库内部版本号，
+> 版本号的另一次说明见下：PyPI 首发（peasy-ai 1.0.0）**不继承**仓库内部版本号，
 > 仓库此前同时存在 3.2.0（`__init__.py` / `ai/core.py` / `engine/core.py`）与
 > 2.2.0（`config_loader.py` / `config/default.json` / CHANGELOG / tag v2.2.0）两套值，
 > 首发时统一重置为 1.0.0，以 PyPI 发布序列为准。
 
-## [1.0.0] - 2026-10-20（PyPI 首发：easya1）
+## [1.0.0] - 2026-10-20（PyPI 首发：peasy-ai）
 
 首次打包发布。仓库此前**没有任何打包文件**（无 `pyproject.toml` / `setup.py`），
 本条目记录的是补上的"打包底座"。
 
 ### Added
 
-- **`pyproject.toml`**：setuptools + **src 布局**，发行名 `easya1`、导入名 `easy_ai`
-  - 控制台入口 `easya1`（等价 `python -m easy_ai`）
+- **`pyproject.toml`**：setuptools + **src 布局**，发行名 `peasy-ai`、导入名 `easy_ai`
+  - 控制台入口 `peasy-ai`（等价 `python -m easy_ai`）
   - 包数据随包分发：`config/*.json`、`data/**/*.json`、`paotuan/` 子应用及其模组
   - 可选依赖分组：`[numpy]` `[jieba]` `[sklearn]` `[all]` `[dev]`；**核心零硬性依赖**
 - **`src/easy_ai/__main__.py`**、**`src/easy_ai/paotuan/__init__.py`**（paotuan 为独立自举子应用，补 `__init__.py` 以便随包分发）
@@ -36,9 +36,15 @@
   - `PROJECT_ROOT` 改为按 `__file__` 推导包目录，安装后即 `site-packages/easy_ai`
 - **版本统一为 1.0.0**：`__init__.py` / `ai/core.py` / `engine/core.py` /
   `ai/config_loader.py` / `config/default.json` 五处
-- **发行名 `easya1`**：PyPI 上 `easy-ai`、`easy_ai` 被 Khoa1468 的占位包占用，
-  `easyai` 为 Zulko 的 EasyAI 博弈库，均不可用
-- README：改为 `pip install easya1` + `import easy_ai`，挂 PyPI 徽章，
+- **发行名定为 `peasy-ai`**（三次改名，每次都是被 PyPI 规则逼的）：
+  - `easy-ai` / `easy_ai`：被 Khoa1468 的占位包（summary 就叫 "My Project Dont Touch"）占用；
+    `easyai` 是 Zulko 的 EasyAI 博弈库 —— 三个都不可用
+  - `easya1`：TestPyPI 干跑通过，但**正式 PyPI 拒收** ——
+    `400 The name 'easya1' is too similar to an existing project`
+  - 根因是 Warehouse 的 `ultranormalize_name` 比对规则：**`o/O→0`、`l/L` 与 `i/I→1`、
+    去掉所有 `-_.`** 后再比。于是 `easya1` 与既有的 `easyai` 都折叠成 `easya1` ⇒ 撞名。
+    ⇒ **TestPyPI 干跑不能替代正式校验**：两边的项目库不同，`easyai` 不在 TestPyPI 上，所以干跑放行了。
+- README：改为 `pip install peasy-ai` + `import easy_ai`，挂 PyPI 徽章，
   目录结构更新为 src 布局，去掉已不存在的 `ai_core.py` 与 `<PATH>` 占位符
 - `.gitignore`：补 `build/` `dist/` `*.egg-info/`
 
@@ -55,8 +61,19 @@
 - `python -m pytest tests -q` → **127 passed**（与重构前 v2.2.0 基线完全一致）
 - `python -m build` → sdist + wheel，`twine check` 双双 PASSED
 - wheel 顶层**仅 `easy_ai`**（无通用名污染），97 个条目，中文文件名正常
-- 干净 venv `pip install easya1-1.0.0`（`pip list` 只有 easya1，**零依赖**）后于中立目录复验：
+- 干净 venv `pip install peasy-ai==1.0.0`（`pip list` 只有 peasy-ai，**零依赖**）后于中立目录复验：
   `__file__` 指向 site-packages、`create()` / `learn` / `respond` / 叙事引擎 / 掷骰 全通
+
+### 发布记录
+
+| 项 | 值 |
+|---|---|
+| PyPI | <https://pypi.org/project/peasy-ai/1.0.0/> |
+| 产物 | `peasy_ai-1.0.0-py3-none-any.whl` + `peasy_ai-1.0.0.tar.gz` |
+| 发行名 / 导入名 | `peasy-ai` / `easy_ai` |
+| 控制台入口 | `peasy-ai`（等价 `python -m easy_ai`） |
+| 上传时刻 | 2026-10-20 12:36 (+0800)，正式索引实装复核通过 |
+| tag | `peasy-ai-v1.0.0` |
 
 ## [2.2.0] - 2026-10-15
 

@@ -20,10 +20,10 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
-from ai.eval import Corpus, evaluate  # noqa: E402
-from ai.matchers.markov_chain import MarkovChain  # noqa: E402
+from easy_ai.ai.eval import Corpus, evaluate  # noqa: E402
+from easy_ai.ai.matchers.markov_chain import MarkovChain  # noqa: E402
 
 DEFAULT_CFG = dict(n=3, smoothing="kneser_ney", unk_cutoff=1)
 

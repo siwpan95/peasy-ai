@@ -5,6 +5,58 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
 > 说明：v1.0.0 之后、v2.2.0 之前的改动（去本地化、README 整理、.gitignore 补齐等）当时未记入本文件，此处据提交历史补记。
+>
+> 版本号的另一次说明见下：PyPI 首发（easya1 1.0.0）**不继承**仓库内部版本号，
+> 仓库此前同时存在 3.2.0（`__init__.py` / `ai/core.py` / `engine/core.py`）与
+> 2.2.0（`config_loader.py` / `config/default.json` / CHANGELOG / tag v2.2.0）两套值，
+> 首发时统一重置为 1.0.0，以 PyPI 发布序列为准。
+
+## [1.0.0] - 2026-10-20（PyPI 首发：easya1）
+
+首次打包发布。仓库此前**没有任何打包文件**（无 `pyproject.toml` / `setup.py`），
+本条目记录的是补上的"打包底座"。
+
+### Added
+
+- **`pyproject.toml`**：setuptools + **src 布局**，发行名 `easya1`、导入名 `easy_ai`
+  - 控制台入口 `easya1`（等价 `python -m easy_ai`）
+  - 包数据随包分发：`config/*.json`、`data/**/*.json`、`paotuan/` 子应用及其模组
+  - 可选依赖分组：`[numpy]` `[jieba]` `[sklearn]` `[all]` `[dev]`；**核心零硬性依赖**
+- **`src/easy_ai/__main__.py`**、**`src/easy_ai/paotuan/__init__.py`**（paotuan 为独立自举子应用，补 `__init__.py` 以便随包分发）
+
+### Changed
+
+- **命名空间重构**（沿用 zhuangtaiji 先例）：`ai/` `engine/` `trpg/` `ui/` `paotuan/`
+  `config/` `data/` `__init__.py` `main.py` 全部移入 `src/easy_ai/`
+  - 原因：顶层 `ai` `engine` `ui` `config` `data` `tools` 都是通用名，
+    原样发布会污染 `site-packages`，且 PyPI 上 `easy-ai` / `easy_ai` / `easyai` 均已被他人占用
+  - 改写 **61 处**绝对导入（`from ai.` → `from easy_ai.ai.` 等）
+  - 删除包内 3 处 `sys.path` 自举（`main.py` / `trpg/adapter.py` / `trpg/trainer.py`），
+    改由包机制保证；`trpg/paotuan_gui.py` 保留 paotuan 自身的自举（它不依赖 easy_ai）
+  - `PROJECT_ROOT` 改为按 `__file__` 推导包目录，安装后即 `site-packages/easy_ai`
+- **版本统一为 1.0.0**：`__init__.py` / `ai/core.py` / `engine/core.py` /
+  `ai/config_loader.py` / `config/default.json` 五处
+- **发行名 `easya1`**：PyPI 上 `easy-ai`、`easy_ai` 被 Khoa1468 的占位包占用，
+  `easyai` 为 Zulko 的 EasyAI 博弈库，均不可用
+- README：改为 `pip install easya1` + `import easy_ai`，挂 PyPI 徽章，
+  目录结构更新为 src 布局，去掉已不存在的 `ai_core.py` 与 `<PATH>` 占位符
+- `.gitignore`：补 `build/` `dist/` `*.egg-info/`
+
+### Fixed
+
+- **无 numpy 时 `create()` 直接崩溃**（既有缺陷，`_init_matchers` 对配置未列出的匹配器
+  默认 `enabled=True`，构造 `NeuralMatcher` 抛 `ImportError` 并一路冒泡）
+  → 匹配器构造缺可选依赖时改为**告警并跳过**，核心能力零依赖可用
+- `tests/test_engine.py`、`tests/test_neural_matcher.py`、`tools/train_textcnn.py`、
+  `tools/eval_rerank.py` 中指向根 `data/`、`config/` 的相对路径随目录迁移一并修正
+
+### 验证
+
+- `python -m pytest tests -q` → **127 passed**（与重构前 v2.2.0 基线完全一致）
+- `python -m build` → sdist + wheel，`twine check` 双双 PASSED
+- wheel 顶层**仅 `easy_ai`**（无通用名污染），97 个条目，中文文件名正常
+- 干净 venv `pip install easya1-1.0.0`（`pip list` 只有 easya1，**零依赖**）后于中立目录复验：
+  `__file__` 指向 site-packages、`create()` / `learn` / `respond` / 叙事引擎 / 掷骰 全通
 
 ## [2.2.0] - 2026-10-15
 

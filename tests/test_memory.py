@@ -17,9 +17,9 @@ from pathlib import Path
 
 # 添加项目根目录到路径
 import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ai.memory import MemoryStore
+from easy_ai.ai.memory import MemoryStore
 
 
 class TestMemoryStore(unittest.TestCase):

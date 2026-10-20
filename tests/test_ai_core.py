@@ -18,9 +18,9 @@ import json
 from pathlib import Path
 
 import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ai.core import AICore, create, from_dict
+from easy_ai.ai.core import AICore, create, from_dict
 
 
 class TestAICore(unittest.TestCase):

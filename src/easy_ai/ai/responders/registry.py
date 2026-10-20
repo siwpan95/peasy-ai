@@ -5,7 +5,7 @@
 管道通过注册表自动发现和实例化，无需硬编码。
 
 用法：
-    from ai.responders.registry import register_responder, RESPONDER_REGISTRY
+    from easy_ai.ai.responders.registry import register_responder, RESPONDER_REGISTRY
 
     @register_responder("time")
     class TimeResponder:

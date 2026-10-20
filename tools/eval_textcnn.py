@@ -21,11 +21,11 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
-from ai.eval import Corpus, evaluate, format_report, tokenize  # noqa: E402
-from ai.matchers.markov_chain import MarkovChain  # noqa: E402
-from ai.textcnn import TextCNN  # noqa: E402
+from easy_ai.ai.eval import Corpus, evaluate, format_report, tokenize  # noqa: E402
+from easy_ai.ai.matchers.markov_chain import MarkovChain  # noqa: E402
+from easy_ai.ai.textcnn import TextCNN  # noqa: E402
 
 
 def run(ratio=0.8, epochs=20, batch=64, window=4, dim=32, filters=32,

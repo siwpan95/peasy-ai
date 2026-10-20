@@ -22,10 +22,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ai.eval import tokenize, BOS, EOS, UNK
-from ai.matchers.markov_chain import MarkovChain, MarkovMatcher
+from easy_ai.ai.eval import tokenize, BOS, EOS, UNK
+from easy_ai.ai.matchers.markov_chain import MarkovChain, MarkovMatcher
 
 
 # ================================================================

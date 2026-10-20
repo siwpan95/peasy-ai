@@ -30,18 +30,12 @@ import os
 import sys
 from pathlib import Path
 
-# ── 动态路径检测 ─────────────────────────────────────────────
-def _detect_project_root() -> Path:
-    current = Path(__file__).parent.absolute()
-    for p in [current] + list(current.parents):
-        if (p / "ai").exists() or (p / "engine").exists():
-            return p
-    return current
+# ── 包目录（含 ai/ engine/ config/ data/ paotuan/）────────────
+# 命名空间包：导入由 easy_ai 包自身保证，无需 sys.path 自举；
+# 安装后本目录即 site-packages/easy_ai，开发态即 src/easy_ai。
+PROJECT_ROOT = Path(__file__).resolve().parent
 
-PROJECT_ROOT = _detect_project_root()
-sys.path.insert(0, str(PROJECT_ROOT))
-
-from ai.logger import setup_logging, get_logger
+from easy_ai.ai.logger import setup_logging, get_logger
 
 
 # ═══════════════════════════════════════════════════════════
@@ -50,7 +44,7 @@ from ai.logger import setup_logging, get_logger
 
 def _create_ai(config_path=None):
     """创建 AICore 实例。"""
-    from ai.core import create
+    from easy_ai.ai.core import create
     if config_path is None:
         p = PROJECT_ROOT / "config" / "default.json"
         config_path = str(p) if p.exists() else None
@@ -59,7 +53,7 @@ def _create_ai(config_path=None):
 
 def _create_engine(data_path=None):
     """创建 NarrativeEngine 实例。"""
-    from engine.core import NarrativeEngine
+    from easy_ai.engine.core import NarrativeEngine
     if data_path is None:
         data_path = str(PROJECT_ROOT / "data")
     cfg = str(PROJECT_ROOT / "config" / "default.json")
@@ -84,7 +78,7 @@ def cmd_chat(args):
 
     if args.ui:
         # GUI 模式：启动 ChatUI
-        from ui.chat_ui import ChatUI
+        from easy_ai.ui.chat_ui import ChatUI
 
         def on_option(index):
             pass  # 闲聊模式无选项
@@ -124,7 +118,7 @@ def cmd_story(args):
 
     if args.ui:
         # GUI 模式
-        from ui.chat_ui import ChatUI
+        from easy_ai.ui.chat_ui import ChatUI
 
         def render_current():
             scene = engine.get_current_scene()
@@ -217,7 +211,7 @@ def cmd_paotuan(args):
 
 def cmd_trpg(args):
     """TRPG 工具箱。"""
-    from trpg.tools import DiceRoller, RandomTables, ProceduralGen, roll, random_npc, random_quest, random_loot
+    from easy_ai.trpg.tools import DiceRoller, RandomTables, ProceduralGen, roll, random_npc, random_quest, random_loot
 
     sub = args.trpg_cmd
 
@@ -256,7 +250,7 @@ def cmd_trpg(args):
     elif sub == "place":
         count = args.count or 1
         for _ in range(count):
-            from trpg.tools import ProceduralGen
+            from easy_ai.trpg.tools import ProceduralGen
             print(f"[地点] {ProceduralGen.place_name()}")
 
     elif sub == "enemy":
@@ -279,9 +273,9 @@ def cmd_trpg(args):
 def cmd_train(args):
     """AI 训练模式：跑团事件 → AICore 知识。"""
     import random
-    from ai.core import AICore
-    from trpg.trainer import AITrainer
-    from trpg.tools import DiceRoller, RandomTables
+    from easy_ai.ai.core import AICore
+    from easy_ai.trpg.trainer import AITrainer
+    from easy_ai.trpg.tools import DiceRoller, RandomTables
 
     ai = AICore()
     trainer = AITrainer(ai)
@@ -340,7 +334,7 @@ def cmd_train(args):
 
 def cmd_ai_knowledge(args):
     """AI 知识问答模式：加载 AI 知识库进行专业问答。"""
-    from ai.core import AICore
+    from easy_ai.ai.core import AICore
     import json
 
     config_path = str(PROJECT_ROOT / "config" / "ai_knowledge.json")
@@ -425,7 +419,7 @@ def cmd_ai_knowledge(args):
 
 def cmd_markov_demo(args):
     """马尔科夫链文本生成演示。"""
-    from ai.matchers.markov_chain import MarkovChain, MarkovMatcher
+    from easy_ai.ai.matchers.markov_chain import MarkovChain, MarkovMatcher
 
     print("=" * 60)
     print("马尔科夫链文本生成演示")
@@ -487,7 +481,7 @@ def cmd_markov_demo(args):
 
 def cmd_neural_train(args):
     """训练神经网络意图分类器。"""
-    from ai.neural import NeuralIntentClassifier, check_numpy
+    from easy_ai.ai.neural import NeuralIntentClassifier, check_numpy
 
     if not check_numpy():
         print("错误：NumPy 未安装。请运行 pip install numpy 后重试。")
@@ -611,14 +605,14 @@ def cmd_demo(args):
 
     # TRPG 工具演示
     print("\n── TRPG 工具演示 ──")
-    from trpg.tools import DiceRoller, RandomTables, ProceduralGen
+    from easy_ai.trpg.tools import DiceRoller, RandomTables, ProceduralGen
     print(f"  掷骰 3d6：{DiceRoller.roll('3d6')[0]}")
     print(f"  随机 NPC：{RandomTables.npc_name()}")
     print(f"  随机地名：{ProceduralGen.place_name()}")
 
     # 马尔科夫链演示
     print("\n── 马尔科夫链演示 ──")
-    from ai.matchers.markov_chain import MarkovChain
+    from easy_ai.ai.matchers.markov_chain import MarkovChain
     mc = MarkovChain(n=3)
     mc.train([
         "人工智能是计算机科学的分支，致力于创造智能系统。",
@@ -632,7 +626,7 @@ def cmd_demo(args):
 
     # 神经网络演示
     print("\n── 神经网络演示 ──")
-    from ai.neural import check_numpy
+    from easy_ai.ai.neural import check_numpy
     if check_numpy():
         print("  NumPy 已安装，神经网络模块可用。")
         print("  运行 'python main.py neural-train' 训练意图分类器。")

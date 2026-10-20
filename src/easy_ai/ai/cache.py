@@ -9,7 +9,7 @@
 - TTLCache: 带过期时间，适合"今天几号"类时效查询
 
 用法：
-    from ai.cache import LRUCache, NoCache
+    from easy_ai.ai.cache import LRUCache, NoCache
 
     ai = AICore(cache=LRUCache(max_size=500))
     # 或

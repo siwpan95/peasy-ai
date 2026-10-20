@@ -16,14 +16,14 @@ import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ai.eval import (
+from easy_ai.ai.eval import (
     Corpus, QAPair, tokenize, detokenize, BOS, EOS, UNK,
     evaluate, format_report, perplexity, top_k_accuracy,
     uniform_baseline, oov_rate, coverage, relative_gain,
 )
-from ai.matchers.markov_chain import MarkovChain
+from easy_ai.ai.matchers.markov_chain import MarkovChain
 
 
 class TestTokenizer(unittest.TestCase):

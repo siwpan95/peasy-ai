@@ -18,10 +18,10 @@ import os
 from pathlib import Path
 
 import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from engine.core import NarrativeEngine
-from engine.models import GameState, Scene, Option
+from easy_ai.engine.core import NarrativeEngine
+from easy_ai.engine.models import GameState, Scene, Option
 
 
 class TestNarrativeEngine(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestNarrativeEngine(unittest.TestCase):
         """每个测试前的设置。"""
         # 使用项目内置的测试数据
         self.engine = NarrativeEngine(
-            data_path=str(Path(__file__).parent.parent / "data"),
+            data_path=str(Path(__file__).resolve().parents[1] / "src" / "easy_ai" / "data"),
             config_file="config.json"
         )
 
@@ -159,7 +159,7 @@ class TestNarrativeEngine(unittest.TestCase):
 
             # 加载到新引擎
             new_engine = NarrativeEngine(
-                data_path=str(Path(__file__).parent.parent / "data"),
+                data_path=str(Path(__file__).resolve().parents[1] / "src" / "easy_ai" / "data"),
                 config_file="config.json"
             )
             new_engine.load(filepath)

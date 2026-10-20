@@ -24,10 +24,10 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
-from ai.eval import Corpus, evaluate, format_report  # noqa: E402
-from ai.matchers.markov_chain import MarkovChain  # noqa: E402
+from easy_ai.ai.eval import Corpus, evaluate, format_report  # noqa: E402
+from easy_ai.ai.matchers.markov_chain import MarkovChain  # noqa: E402
 
 
 def run_grid(train_texts, hold_texts, ns, smoothings, cutoffs):

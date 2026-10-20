@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "easya1"
+version = "1.0.0"
+description = "零硬编码、配置驱动的通用 AI 对话框架：AI 核心 + 叙事引擎 + TRPG 训练场"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "siwpan" }]
+keywords = ["ai", "chatbot", "dialogue", "narrative-engine", "trpg", "textcnn"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+
+# 核心刻意保持零硬性依赖（纯标准库即可跑通 AICore / 叙事引擎 / TRPG 工具）。
+# numpy / jieba / scikit-learn 只用于神经网络与中文分词增强，按需安装。
+dependencies = []
+
+[project.optional-dependencies]
+numpy = ["numpy>=1.20"]
+jieba = ["jieba>=0.42"]
+sklearn = ["scikit-learn>=1.0"]
+all = ["numpy>=1.20", "jieba>=0.42", "scikit-learn>=1.0"]
+dev = ["pytest>=7.0", "build>=1.0", "twine>=5.0"]
+
+[project.urls]
+Homepage = "https://gitee.com/siwpan/easy-ai"
+Source = "https://gitee.com/siwpan/easy-ai"
+Changelog = "https://gitee.com/siwpan/easy-ai/blob/master/CHANGELOG.md"
+
+[project.scripts]
+easya1 = "easy_ai.main:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+# paotuan 下这些是纯数据目录（无 __init__.py），按 package-data 分发，不当包收
+exclude = [
+    "easy_ai.paotuan.characters",
+    "easy_ai.paotuan.config",
+    "easy_ai.paotuan.data",
+    "easy_ai.paotuan.modules",
+    "easy_ai.paotuan.modules.*",
+    "easy_ai.paotuan.saves",
+]
+
+[tool.setuptools.package-data]
+easy_ai = ["config/*.json", "data/*.json", "data/scenes/*.json"]
+"easy_ai.paotuan" = [
+    "*.md",
+    "config/*.json",
+    "data/*.json",
+    "characters/*.json",
+    "modules/**/*.json",
+    "saves/*.json",
+]

@@ -29,11 +29,11 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
-from ai.eval import Corpus  # noqa: E402
-from ai.eval.tokenize import tokenize  # noqa: E402
-from ai.textcnn import TextCNN  # noqa: E402
+from easy_ai.ai.eval import Corpus  # noqa: E402
+from easy_ai.ai.eval.tokenize import tokenize  # noqa: E402
+from easy_ai.ai.textcnn import TextCNN  # noqa: E402
 
 # P2 扫描出的最优配置
 CNN_CFG = dict(window=4, embed_dim=32, n_filters=32, epochs=20, unk_cutoff=1)
@@ -69,7 +69,7 @@ def run(neg: int = 9, weights: str = "auto", seed: int = 0, conditional: bool = 
                 batch_size=64)
         source = f"条件训练 P(回答|问题)（含联网语料 {len(web_texts)} 段）"
     else:
-        wp = ROOT / "data" / "textcnn_weights.json" if weights == "auto" else Path(weights)
+        wp = ROOT / "src" / "easy_ai" / "data" / "textcnn_weights.json" if weights == "auto" else Path(weights)
         source = "无条件权重（对照）"
         if wp.exists():
             try:

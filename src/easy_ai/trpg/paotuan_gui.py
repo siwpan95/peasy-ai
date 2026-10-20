@@ -22,12 +22,12 @@ from typing import Dict, List, Optional, Any
 # ---- 路径 ----
 _EASYAI_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 _PAOTUAN_DIR = os.path.join(_EASYAI_DIR, "paotuan")
-sys.path.insert(0, _EASYAI_DIR)
 
+# 命名空间包：easy_ai 自身已可导入，不再把包根塞进 sys.path
 # easy-ai 的 ai.core 与 paotuan 的 core/ 不再冲突（ai.core vs core）
-from ai.core import AICore
-from ui.chat_ui import ChatUI
-from trpg.trainer import AITrainer
+from easy_ai.ai.core import AICore
+from easy_ai.ui.chat_ui import ChatUI
+from easy_ai.trpg.trainer import AITrainer
 
 # paotuan 必须在 easy-ai 之前（core/ 包 vs core.py 冲突）
 # 注意：importlib 会自动往 sys.path[0] 插入路径，所以最后做

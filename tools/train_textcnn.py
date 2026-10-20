@@ -21,15 +21,15 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
-from ai.eval import Corpus, evaluate, format_report  # noqa: E402
-from ai.textcnn import TextCNN  # noqa: E402
+from easy_ai.ai.eval import Corpus, evaluate, format_report  # noqa: E402
+from easy_ai.ai.textcnn import TextCNN  # noqa: E402
 
 
 def main():
     ap = argparse.ArgumentParser(description="训练 TextCNN 并导出权重")
-    ap.add_argument("--out", default=str(ROOT / "data" / "textcnn_weights.json"))
+    ap.add_argument("--out", default=str(ROOT / "src" / "easy_ai" / "data" / "textcnn_weights.json"))
     ap.add_argument("--epochs", type=int, default=40)
     ap.add_argument("--batch", type=int, default=64)
     ap.add_argument("--window", type=int, default=8)
@@ -54,8 +54,8 @@ def main():
     out_path = Path(args.out)
     if args.conditional:
         conditions = [p.question for p in corpus.pairs]
-        if args.out == str(ROOT / "data" / "textcnn_weights.json"):
-            out_path = ROOT / "data" / "textcnn_rerank_weights.json"
+        if args.out == str(ROOT / "src" / "easy_ai" / "data" / "textcnn_weights.json"):
+            out_path = ROOT / "src" / "easy_ai" / "data" / "textcnn_rerank_weights.json"
     if args.full:
         T = corpus.ai_texts or corpus.all_texts
         H = []
@@ -88,7 +88,7 @@ def main():
     size_kb = out_path.stat().st_size / 1024
     print(f"\n权重已写入 {out_path}（{size_kb:.0f} KB）")
     print("运行期加载：")
-    print(f"    from ai.textcnn import TextCNN; m = TextCNN.load(r'{out_path}')")
+    print(f"    from easy_ai.ai.textcnn import TextCNN; m = TextCNN.load(r'{out_path}')")
 
 
 if __name__ == "__main__":

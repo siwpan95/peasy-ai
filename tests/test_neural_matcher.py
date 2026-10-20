@@ -16,11 +16,11 @@ import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ai.matchers import MATCHER_REGISTRY, NeuralMatcher, MarkovMatcher  # noqa: E402
-from ai.matchers.retrieval import RetrievalIndex  # noqa: E402
-from ai.textcnn import TextCNN  # noqa: E402
+from easy_ai.ai.matchers import MATCHER_REGISTRY, NeuralMatcher, MarkovMatcher  # noqa: E402
+from easy_ai.ai.matchers.retrieval import RetrievalIndex  # noqa: E402
+from easy_ai.ai.textcnn import TextCNN  # noqa: E402
 
 PAIRS = [
     ("今天天气如何", "今天天气晴朗，适合出门散步"),
@@ -39,7 +39,7 @@ class TestRegistration(unittest.TestCase):
     def test_default_config_disabled(self):
         """默认配置里 neural 是关闭的 —— 训练需数秒，不应拖慢 AICore 启动。"""
         import json
-        cfg = json.loads((Path(__file__).resolve().parents[1] / "config"
+        cfg = json.loads((Path(__file__).resolve().parents[1] / "src" / "easy_ai" / "config"
                           / "default.json").read_text(encoding="utf-8"))
         self.assertFalse(cfg["matchers"]["neural"]["enabled"])
 

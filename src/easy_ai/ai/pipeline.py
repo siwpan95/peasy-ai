@@ -17,9 +17,12 @@ from typing import Dict, List, Any, Optional, Tuple, Callable
 from dataclasses import dataclass
 
 from .config_loader import ConfigLoader
+from .logger import get_logger
 from .memory import MemoryStore
 from .matchers import BaseMatcher, MatchResult, MATCHER_REGISTRY
 from .responders.registry import RESPONDER_REGISTRY
+
+logger = get_logger("ai.pipeline")  # 与 core.py 一致：传短名，get_logger 自行加 easy_ai. 前缀
 
 
 @dataclass
@@ -90,8 +93,14 @@ class ResponsePipeline:
 
         for name, matcher_cls in MATCHER_REGISTRY.items():
             cfg = matcher_config.get(name, {})
-            if cfg.get("enabled", True):
+            if not cfg.get("enabled", True):
+                continue
+            try:
                 instances.append(matcher_cls(cfg))
+            except ImportError as e:
+                # 可选依赖缺失（如 neural 需要 numpy）时优雅降级：跳过该匹配器，
+                # 而不是让整个 AICore 起不来。核心能力为零依赖，装齐依赖即自动恢复。
+                logger.warning("匹配器 %s 因缺少可选依赖被跳过：%s", name, e)
 
         instances.sort(key=lambda m: m.priority)
         return instances

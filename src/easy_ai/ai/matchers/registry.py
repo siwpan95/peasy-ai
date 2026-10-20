@@ -5,7 +5,7 @@
 管道通过注册表自动发现和实例化匹配器，无需硬编码。
 
 用法：
-    from ai.matchers.registry import register_matcher, MATCHER_REGISTRY
+    from easy_ai.ai.matchers.registry import register_matcher, MATCHER_REGISTRY
 
     @register_matcher("my_custom")
     class MyCustomMatcher(BaseMatcher):

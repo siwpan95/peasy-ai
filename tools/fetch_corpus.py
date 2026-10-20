@@ -30,9 +30,9 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Tuple
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
-from ai.eval.tokenize import tokenize  # noqa: E402
+from easy_ai.ai.eval.tokenize import tokenize  # noqa: E402
 
 UA = "easy-ai-research/1.0 (local corpus research; contact: local user)"
 

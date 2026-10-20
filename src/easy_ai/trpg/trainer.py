@@ -13,10 +13,9 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 
-_EASYAI_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, _EASYAI_DIR)
+# 命名空间包：导入由 easy_ai 包自身保证，无需 sys.path 自举
 
-from ai.core import AICore
+from easy_ai.ai.core import AICore
 
 
 @dataclass

@@ -14,7 +14,7 @@ AICore: easy-ai 的主入口类 — 全面增强版。
 - 完整状态持久化（记忆 + 会话）
 
 用法：
-    from ai.core import AICore
+    from easy_ai.ai.core import AICore
 
     # 方式1：使用默认配置（零参数启动）
     ai = AICore()
@@ -55,7 +55,7 @@ class AICore:
     不包含任何领域知识，所有行为通过配置文件定义。
     """
 
-    VERSION = "3.2.0"
+    VERSION = "1.0.0"
 
     def __init__(
         self,

@@ -19,13 +19,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import numpy as np
 
-from ai.eval import tokenize, BOS, EOS, UNK, SEP, evaluate, perplexity
-from ai.matchers.markov_chain import MarkovChain
-from ai.textcnn import TextCNN, PAD_ID
+from easy_ai.ai.eval import tokenize, BOS, EOS, UNK, SEP, evaluate, perplexity
+from easy_ai.ai.matchers.markov_chain import MarkovChain
+from easy_ai.ai.textcnn import TextCNN, PAD_ID
 
 
 # 两条互不相交的确定链（与 test_markov.py 同构，便于跨模型比较）

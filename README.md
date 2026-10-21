@@ -66,6 +66,11 @@ ai.save("memory.json")               # 持久化
 ai.load("memory.json")               # 恢复
 ```
 
+> **属性 vs 方法**：`memory_count` / `cache_size` / `session_count` / `matchers_info`
+> 是 `@property`，无括号访问（`ai.memory_count`）。
+> 开关类方法（`enable_*` / `set_*` / `add_matcher` / `save` / `reload` / `load`）
+> 均返回 `self`，支持链式：`ai.enable_sessions().set_safety(["密码"])`。
+
 ### 2. 配置文件驱动
 
 ```python

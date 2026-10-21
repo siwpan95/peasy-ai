@@ -55,7 +55,7 @@ class AICore:
     不包含任何领域知识，所有行为通过配置文件定义。
     """
 
-    VERSION = "1.0.0"
+    VERSION = "1.0.1"
 
     def __init__(
         self,
@@ -264,10 +264,21 @@ class AICore:
     # ============================================================
     # 安全过滤
     # ============================================================
-    def set_safety(self, keywords: List[str]):
-        """设置安全过滤关键词。"""
-        self.pipeline.set_safety_keywords(keywords)
+    def set_safety(self, keywords):
+        """设置安全过滤关键词；传布尔值可快捷开/关（保留现有关键词）。"""
+        if isinstance(keywords, bool):
+            self.pipeline.set_safety_enabled(keywords)
+            self.logger.info("安全过滤已%s", "启用" if keywords else "禁用")
+            return self
+        if isinstance(keywords, str):
+            keywords = [keywords]
+        if not isinstance(keywords, (list, tuple, set)):
+            raise TypeError(
+                f"set_safety() 需要关键词列表或布尔开关，收到 {type(keywords).__name__}"
+            )
+        self.pipeline.set_safety_keywords(list(keywords))
         self.logger.info("安全过滤已启用，关键词数：%d", len(keywords))
+        return self
 
     # ============================================================
     # 规则管理
@@ -303,10 +314,56 @@ class AICore:
     # ============================================================
     # 匹配器管理
     # ============================================================
-    def add_matcher(self, matcher: BaseMatcher):
-        """添加自定义匹配器。"""
+    def add_matcher(self, name, matcher=None, **config):
+        """注册自定义匹配器，返回 self 支持链式调用。
+
+        用法：
+            add_matcher(matcher)                 # 旧式：直接传实例，名称取 matcher.name
+            add_matcher("my", matcher)           # 指定名称注册实例
+            add_matcher("my", MyMatcher)         # 传类/工厂函数，按名称实例化
+            add_matcher("my", MyMatcher, priority=10)  # 额外配置透传给匹配器
+
+        matcher 可以是 BaseMatcher 子类实例，也可以是任何实现了
+        ``match(text, rules)`` 的鸭子类型对象——缺失的协议属性
+        （name / priority / min_confidence / can_process）会按默认值补齐，
+        无需强制继承 BaseMatcher。
+        """
+        if matcher is None:
+            # 旧式单参调用：add_matcher(matcher_instance)
+            if isinstance(name, BaseMatcher) or callable(getattr(name, "match", None)):
+                matcher = name
+                name = getattr(matcher, "name", None)
+            else:
+                raise TypeError(
+                    "add_matcher() 需要 (name, matcher) 两个参数，"
+                    "或旧式的 (matcher_instance) 单参数"
+                )
+        if not isinstance(matcher, BaseMatcher) and callable(matcher):
+            # 传的是类/工厂函数：按名称实例化
+            cfg = dict(config)
+            if name:
+                cfg.setdefault("name", name)
+            matcher = matcher(cfg)
+        if not isinstance(matcher, BaseMatcher):
+            if not callable(getattr(matcher, "match", None)):
+                raise TypeError(
+                    f"matcher 必须是 BaseMatcher 实例、可调用工厂或实现了 match() 的对象，"
+                    f"收到 {type(matcher).__name__}"
+                )
+            # 鸭子类型：补齐管道所需的协议默认值
+            if name and not getattr(matcher, "name", None):
+                matcher.name = name
+            if not hasattr(matcher, "priority"):
+                matcher.priority = config.get("priority", 50)
+            if not hasattr(matcher, "min_confidence"):
+                matcher.min_confidence = config.get("min_confidence", 0.0)
+            if not hasattr(matcher, "can_process"):
+                matcher.can_process = lambda text: True
+        elif name and matcher.name != name:
+            matcher.name = name
         self.pipeline.add_matcher(matcher)
         self.logger.debug("添加匹配器：%s", matcher.name)
+        return self
 
     def get_matcher(self, name: str) -> Optional[BaseMatcher]:
         """获取匹配器。"""
@@ -323,6 +380,7 @@ class AICore:
         """设置响应选择策略: 'random', 'first', 'most_frequent'"""
         self.pipeline.set_selection_strategy(strategy)
         self.logger.debug("响应策略设置为：%s", strategy)
+        return self
 
     # ============================================================
     # 会话管理
@@ -334,6 +392,7 @@ class AICore:
                 max_history=max_history, ttl_minutes=ttl_minutes
             )
             self.logger.info("会话管理已启用（max_history=%d, ttl=%dmin）", max_history, ttl_minutes)
+        return self
 
     def get_session_context(self, session_id: str) -> Dict[str, Any]:
         """获取会话上下文。"""
@@ -365,11 +424,16 @@ class AICore:
     # ============================================================
     # 意图识别
     # ============================================================
-    def enable_intent(self):
-        """启用意图识别。"""
-        if not self.intent_clf:
-            self.intent_clf = IntentClassifier()
-            self.logger.info("意图识别已启用")
+    def enable_intent(self, enabled: bool = True):
+        """启用/禁用意图识别（enabled=False 时关闭）。"""
+        if enabled:
+            if not self.intent_clf:
+                self.intent_clf = IntentClassifier()
+                self.logger.info("意图识别已启用")
+        else:
+            self.intent_clf = None
+            self.logger.info("意图识别已禁用")
+        return self
 
     def classify_intent(self, text: str) -> Tuple[str, float]:
         """分类意图。返回 (意图标签, 置信度)。"""
@@ -401,6 +465,7 @@ class AICore:
         except Exception as e:
             self.logger.error("热重载失败：%s", e)
             raise
+        return self
 
     # ============================================================
     # 存档 & 读档（增强：保存完整状态）
@@ -417,6 +482,7 @@ class AICore:
             path = "memory.json"
         self.memory.save_to_file(path)
         self.logger.info("状态已保存：%s", path)
+        return self
 
     def load(self, filepath: Optional[str] = None):
         """加载完整状态（记忆 + 会话）。
@@ -427,22 +493,27 @@ class AICore:
         path = filepath or self.memory_path
         if not path:
             self.logger.error("未指定加载路径")
-            return
+            return self
         self.memory.load_from_file(path)
         self.logger.info("状态已加载：%s", path)
+        return self
 
     def export_state(self) -> str:
         """导出完整状态为 JSON 字符串。"""
         return self.memory.to_json()
 
-    def import_state(self, json_str: str):
-        """从 JSON 字符串导入完整状态。"""
+    def import_state(self, payload):
+        """从 JSON 字符串或 dict 导入完整状态。"""
         try:
-            self.memory.from_json(json_str)
+            if isinstance(payload, (str, bytes, bytearray)):
+                self.memory.from_json(payload)
+            else:
+                self.memory.from_dict(payload)
             self.logger.info("状态已导入")
         except Exception as e:
             self.logger.error("状态导入失败：%s", e)
             raise
+        return self
 
     # ============================================================
     # 管道控制
@@ -451,11 +522,13 @@ class AICore:
         """启用管道阶段。"""
         self.pipeline.enable_stage(name)
         self.logger.debug("管道阶段已启用：%s", name)
+        return self
 
     def disable_stage(self, name: str):
         """禁用管道阶段。"""
         self.pipeline.disable_stage(name)
         self.logger.debug("管道阶段已禁用：%s", name)
+        return self
 
     def get_pipeline_info(self) -> Dict[str, Any]:
         """获取管道信息（新增）。"""
@@ -468,9 +541,13 @@ class AICore:
         """导出记忆（向后兼容）。"""
         return self.memory.to_json()
 
-    def import_memory(self, json_str: str):
-        """导入记忆（向后兼容）。"""
-        self.memory.from_json(json_str)
+    def import_memory(self, payload):
+        """导入记忆（向后兼容）。接受 dict 或 JSON 字符串，与 export_memory 对称。"""
+        if isinstance(payload, (str, bytes, bytearray)):
+            self.memory.from_json(payload)
+        else:
+            self.memory.from_dict(payload)
+        return self
 
     def fuzzy_match(self, text: str, threshold: float = 0.6):
         """模糊匹配（向后兼容）。"""

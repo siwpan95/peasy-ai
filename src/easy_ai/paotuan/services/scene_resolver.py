@@ -4,7 +4,10 @@
 每解决一个主要挑战后，触发标准化结算流程
 """
 from typing import Dict, Optional
-from core.character import Character
+try:
+    from ..core.character import Character
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character
 
 
 class SceneResolver:

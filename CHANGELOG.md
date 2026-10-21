@@ -11,6 +11,53 @@
 > 2.2.0（`config_loader.py` / `config/default.json` / CHANGELOG / tag v2.2.0）两套值，
 > 首发时统一重置为 1.0.0，以 PyPI 发布序列为准。
 
+## [1.0.1] - 2026-10-21
+
+《四境》纪录片项目压测反哺：`tests/smoke_easy_ai.py` 66/81 → 81/81，
+仓库自带 unittest 127/127 保持全绿。
+
+### Fixed
+
+- **`paotuan` 子包 pip 安装后整体不可用（P0，打包级）**：`core/` `services/` `view/`
+  及 `mirror_mvp.py` / `mirror_launcher.py` 共 12 个文件原使用顶层绝对导入
+  （`from core.xxx import` / `from view import`），源码自举可跑但
+  `import easy_ai.paotuan.core.scene_engine` 必然 `ModuleNotFoundError`。
+  改为**双模导入**：优先相对导入（`from .core.xxx` / `from ..core.xxx`），
+  `ImportError` 时回退顶层绝对导入——包内导入与 `main.py paotuan`
+  的文件式自举加载（`spec_from_file_location`，无父包）两种模式同时可用
+- **`AICore` 开关类方法不支持链式调用**：`set_safety` / `add_matcher` /
+  `set_selection_strategy` / `enable_sessions` / `enable_intent` /
+  `enable_stage` / `disable_stage` / `save` / `reload` / `load`
+  原隐式返回 `None`，现统一返回 `self`
+- **`AICore.import_memory()` 只收 JSON 字符串**：与 `export_memory()` 不对称，
+  内存 roundtrip 备份不可用；现同时接受 dict 与 JSON 字符串
+  （`import_state()` 同步支持）
+- **`AICore.add_matcher()` 无法注册自定义匹配器**：原签名 `add_matcher(matcher)`
+  不支持指定名称；现为 `add_matcher(name, matcher=None, **config)`，支持
+  实例 / 类 / 工厂函数三种注册方式，鸭子类型对象（仅实现 `match()`）
+  会自动补齐 `name` / `priority` / `min_confidence` / `can_process` 协议默认值
+- **`AICore.remove_matcher()` 调用了不存在的方法**：`ResponsePipeline`
+  没有 `remove_matcher`，调用即 `AttributeError`；已补齐实现
+- **`AICore.get_pipeline_info()` 必然 AttributeError**：`ResponsePipeline`
+  没有 `get_info()`（`AICore` 上有 `get_info` 而管道对象上没有，命名不统一）；
+  已为管道补齐 `get_info()`，返回阶段开关 / 匹配器清单 / 选择策略 / 安全配置
+- **`enable_intent()` 签名不统一**：原无参数，现为 `enable_intent(enabled=True)`，
+  与 `enable_sessions()` / `enable_stage()` 一致，`False` 可关闭意图识别
+- **`set_safety()` 传布尔触发裸 TypeError**：`len(True)` 炸出
+  `object of type 'bool' has no len()`；现支持布尔快捷开关
+  （保留现有关键词），非法类型给出明确 TypeError
+
+### Changed
+
+- `ResponsePipeline.add_matcher()` 排序键对缺失 `priority` 的匹配器
+  回退默认值 50（直接调用管道 API 时更稳）
+
+### Docs
+
+- README「核心用法」补充属性/方法说明：`memory_count` / `cache_size` /
+  `session_count` / `matchers_info` 为 `@property`（无括号访问），
+  开关类方法返回 `self` 支持链式
+
 ## [1.0.0] - 2026-10-20（PyPI 首发：peasy-ai）
 
 首次打包发布。仓库此前**没有任何打包文件**（无 `pyproject.toml` / `setup.py`），

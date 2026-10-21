@@ -9,7 +9,10 @@ import os
 import random
 import sys
 
-from view.terminal_renderer import TerminalRenderer
+try:
+    from .view.terminal_renderer import TerminalRenderer
+except ImportError:  # 脚本自举模式（本文件以无包方式经 spec_from_file_location 加载）
+    from view.terminal_renderer import TerminalRenderer
 
 # Windows GBK 终端兼容
 if sys.platform == "win32":
@@ -231,9 +234,14 @@ class MirrorLauncher:
 
     def _play(self, module_path: str, char_src: str):
         """游戏主循环"""
-        from mirror_mvp import MirrorOfLost
-        from core.character import Character
-        from core.combat_engine import CombatEngine
+        try:
+            from .mirror_mvp import MirrorOfLost
+            from .core.character import Character
+            from .core.combat_engine import CombatEngine
+        except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+            from mirror_mvp import MirrorOfLost
+            from core.character import Character
+            from core.combat_engine import CombatEngine
 
         game = MirrorOfLost(SYSTEM_FILE, module_path)
 

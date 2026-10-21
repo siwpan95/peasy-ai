@@ -83,7 +83,7 @@ class NarrativeEngine:
     不包含任何特定游戏类型的知识。
     """
 
-    VERSION = "1.0.0"
+    VERSION = "1.0.1"
 
     def __init__(self, data_path: str = "data", config_file: str = "config.json"):
         """

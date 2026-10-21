@@ -123,7 +123,7 @@ class ResponsePipeline:
 
     def add_matcher(self, matcher: BaseMatcher):
         self.matchers.append(matcher)
-        self.matchers.sort(key=lambda m: m.priority)
+        self.matchers.sort(key=lambda m: getattr(m, "priority", 50))
         self.stages["matchers"] = True
 
     def add_responder(self, responder: Callable):
@@ -280,8 +280,13 @@ class ResponsePipeline:
         self.stages[name] = False
 
     def set_safety_keywords(self, keywords: List[str]):
-        self.safety_keywords = keywords
+        self.safety_keywords = list(keywords)
         self.stages["safety"] = bool(keywords)
+
+    def set_safety_enabled(self, enabled: bool):
+        """快捷开/关安全过滤（不改变关键词列表）。"""
+        self.safety_enabled = enabled
+        self.stages["safety"] = enabled and bool(self.safety_keywords)
 
     def set_selection_strategy(self, strategy: str):
         if strategy in self.SELECTION_STRATEGIES:
@@ -292,6 +297,25 @@ class ResponsePipeline:
             if m.name == name:
                 return m
         return None
+
+    def remove_matcher(self, name: str) -> bool:
+        """按名称移除匹配器，返回是否移除成功。"""
+        for i, m in enumerate(self.matchers):
+            if m.name == name:
+                self.matchers.pop(i)
+                return True
+        return False
+
+    def get_info(self) -> Dict[str, Any]:
+        """管道状态快照：阶段开关 / 匹配器清单 / 选择策略 / 安全配置。"""
+        return {
+            "stages": dict(self.stages),
+            "matchers": [repr(m) for m in self.matchers],
+            "selection_strategy": self.selection_strategy,
+            "safety_enabled": self.safety_enabled,
+            "safety_keywords": list(self.safety_keywords),
+            "responders": len(self.responders),
+        }
 
     def __repr__(self):
         return (f"<ResponsePipeline stages={self.stages} "

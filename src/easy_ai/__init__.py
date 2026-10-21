@@ -30,7 +30,7 @@ from easy_ai.ai.pipeline import ResponsePipeline, PipelineResult
 from easy_ai.ai.session import SessionManager
 from easy_ai.ai.intent import IntentClassifier
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __all__ = [
     "AICore", "ConfigLoader", "MemoryStore", "ResponsePipeline",
     "PipelineResult", "SessionManager", "IntentClassifier",

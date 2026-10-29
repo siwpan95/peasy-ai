@@ -11,8 +11,12 @@ NPC反应表(Excel)、场景构建表(Excel→module.json)、网格地图
 import json
 import os
 from typing import List, Dict, Optional
-from core.character import Character, Skill, CharacterFeature, Equipment
-from core.enemy import Enemy
+try:
+    from ..core.character import Character, Skill, CharacterFeature, Equipment
+    from ..core.enemy import Enemy
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character, Skill, CharacterFeature, Equipment
+    from core.enemy import Enemy
 
 # 项目根目录（pt/）
 _PT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

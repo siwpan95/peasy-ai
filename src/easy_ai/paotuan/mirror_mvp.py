@@ -10,17 +10,30 @@ import os
 import random
 import sys
 
-from core.character import Character, CharacterFeature, Skill, Equipment
-from core.enemy import Enemy
-from core.scene_engine import SceneEngine
-from core.environment_system import EnvironmentSystem
-from core.viewmodel import ViewModel, ViewModelResult
-from core.combat_engine import CombatEngine
-from services.item_system import ItemSystem
-from services.scene_resolver import SceneResolver
-from services.xp_system import XPSystem
-from services.save_manager import SaveManager
-from view.terminal_renderer import TerminalRenderer
+try:
+    from .core.character import Character, CharacterFeature, Skill, Equipment
+    from .core.enemy import Enemy
+    from .core.scene_engine import SceneEngine
+    from .core.environment_system import EnvironmentSystem
+    from .core.viewmodel import ViewModel, ViewModelResult
+    from .core.combat_engine import CombatEngine
+    from .services.item_system import ItemSystem
+    from .services.scene_resolver import SceneResolver
+    from .services.xp_system import XPSystem
+    from .services.save_manager import SaveManager
+    from .view.terminal_renderer import TerminalRenderer
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character, CharacterFeature, Skill, Equipment
+    from core.enemy import Enemy
+    from core.scene_engine import SceneEngine
+    from core.environment_system import EnvironmentSystem
+    from core.viewmodel import ViewModel, ViewModelResult
+    from core.combat_engine import CombatEngine
+    from services.item_system import ItemSystem
+    from services.scene_resolver import SceneResolver
+    from services.xp_system import XPSystem
+    from services.save_manager import SaveManager
+    from view.terminal_renderer import TerminalRenderer
 
 
 class MirrorOfLost:

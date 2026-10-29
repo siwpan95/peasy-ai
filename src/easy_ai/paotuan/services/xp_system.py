@@ -4,7 +4,10 @@
 GURPS char points 发放 + 角色升级
 """
 from typing import Dict, List
-from core.character import Character, Skill
+try:
+    from ..core.character import Character, Skill
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character, Skill
 
 
 class XPSystem:

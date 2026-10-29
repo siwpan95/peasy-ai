@@ -5,7 +5,10 @@
 MVVM 中间层 —— GURPS 的 "-4 HP, 切割, 左臂" 被翻译为 "刀刃划开前臂肌理"
 """
 from typing import Dict, List, Optional, Any
-from core.character import Character
+try:
+    from .character import Character
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character
 
 
 class ViewModelResult:

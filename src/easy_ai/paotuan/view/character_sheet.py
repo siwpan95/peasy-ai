@@ -3,7 +3,10 @@
 迷失之镜 — 终端角色卡渲染器 (View 层 · 阶段 2)
 游戏内按 C 查看角色卡
 """
-from core.character import Character
+try:
+    from ..core.character import Character
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character
 
 
 class CharacterSheet:

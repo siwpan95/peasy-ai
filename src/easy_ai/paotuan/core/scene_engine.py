@@ -8,12 +8,20 @@ import json
 import os
 import re
 from typing import Dict, List, Optional, Tuple, Any
-from core.character import Character
-from core.environment_system import EnvironmentSystem
-from core.viewmodel import ViewModel, ViewModelResult
-from core.combat_engine import CombatEngine
-from core.enemy import Enemy
-from services.scene_resolver import SceneResolver
+try:
+    from .character import Character
+    from .environment_system import EnvironmentSystem
+    from .viewmodel import ViewModel, ViewModelResult
+    from .combat_engine import CombatEngine
+    from .enemy import Enemy
+    from ..services.scene_resolver import SceneResolver
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character
+    from core.environment_system import EnvironmentSystem
+    from core.viewmodel import ViewModel, ViewModelResult
+    from core.combat_engine import CombatEngine
+    from core.enemy import Enemy
+    from services.scene_resolver import SceneResolver
 
 
 def _parse_int(value, default=0):

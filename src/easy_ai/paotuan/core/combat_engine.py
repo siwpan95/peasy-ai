@@ -6,8 +6,12 @@
 import random
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, field
-from core.character import Character
-from core.enemy import Enemy
+try:
+    from .character import Character
+    from .enemy import Enemy
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character
+    from core.enemy import Enemy
 
 
 # === 命中部位表 ===

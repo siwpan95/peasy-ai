@@ -7,7 +7,10 @@ import json
 import os
 import time
 from typing import Dict, List, Optional
-from core.character import Character
+try:
+    from ..core.character import Character
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character
 
 # 项目根目录（pt/）
 _PT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

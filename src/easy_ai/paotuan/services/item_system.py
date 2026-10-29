@@ -5,7 +5,10 @@
 """
 import random
 from typing import List, Dict, Optional, Tuple
-from core.character import Character, Equipment
+try:
+    from ..core.character import Character, Equipment
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character, Equipment
 
 
 class ItemSystem:

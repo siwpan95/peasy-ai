@@ -4,8 +4,12 @@
 所有终端输出收拢到一个模块。只消费 ViewModelResult，不直接读 Model。
 """
 from typing import List, Dict, Optional
-from core.character import Character
-from .character_sheet import CharacterSheet
+try:
+    from ..core.character import Character
+    from .character_sheet import CharacterSheet
+except ImportError:  # 脚本自举模式（sys.path[0] = paotuan/ 目录）
+    from core.character import Character
+    from .character_sheet import CharacterSheet
 
 
 class TerminalRenderer:

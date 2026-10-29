@@ -1,5 +1,12 @@
 # easy-ai — 通用 AI 对话框架
 
+## 仓库角色定位（投资组合分级 ①）
+
+> 本仓在 siwpan 投资组合（D:/projects/repos，共 133 仓）中定级为 **① 核心推进**，领域 **AI/大模型**，定位 **本地AI叙事**。
+> **角色**：零硬编码配置驱动通用 AI 对话框架+叙事引擎，持续投入。
+> **维护策略**：① 核心推进——持续投入、不允许冻结；随所属收敛点 / 流水线长期演进。
+> 投资组合统一分级索引：`D:/projects/repos/PORTFOLIO_TIERING.md`。
+
 [![PyPI version](https://img.shields.io/pypi/v/peasy-ai)](https://pypi.org/project/peasy-ai/)
 [![Python versions](https://img.shields.io/pypi/pyversions/peasy-ai)](https://pypi.org/project/peasy-ai/)
 [![License](https://img.shields.io/pypi/l/peasy-ai)](https://pypi.org/project/peasy-ai/)
